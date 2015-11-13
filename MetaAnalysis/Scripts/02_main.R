@@ -4,6 +4,8 @@
 source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R")
 source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/CheckComparisons.R")
 source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/DataFormat.R")
+source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/ModelFunctions.R")
+
 
 #################
 ## Libraries
@@ -16,6 +18,7 @@ library(maptools)
 library(MuMIn)
 library(dplyr)
 library(car)
+library(Hmisc)
 
 #################
 ## Locations
@@ -70,15 +73,17 @@ dev.off()
 ## Data Exploration
 #################
 
-hist(garden$Taxon.Richness)
-garden$Study.ID[garden$Taxon.Richness > 100] ## Because its multiple samples
+## Correcting sampling area
+garden$Total_sampledArea <- garden$Sampled.Area * garden$Number.of.samples
+garden$Total_sampledArea_metres <- convertArea(garden$Total_sampledArea, garden$Sampled.Area.Units, "sample")
 
-x <- aggregate(garden$Number.of.samples, list(garden$Study.ID), function(x){var_effort = var(x, na.rm=TRUE)})
-sampled_effort_varies <- x$Group.1[x$x > 0]
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Total_sampledArea_metres), garden$Taxon.Richness, garden$Taxon.Richness/garden$Total_sampledArea_metres)
 
-y <- aggregate(garden$Sampled.Area, list(garden$Study.ID), function(x){var_area = var(x, na.rm=TRUE)})
+hist(garden$Corrected_Taxon.Richness)
+garden$Study.ID[garden$Corrected_Taxon.Richness > 100] ## Because its cubic metres...
 
-sampled_area_varies <- y$Group.1[y$x > 0]
+temp <-garden[!(garden$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),]
+hist(temp$Corrected_Taxon.Richness) ## That's better, so for now, exclude those two Smith studies	
 
 
 ###########################################################
@@ -87,40 +92,42 @@ sampled_area_varies <- y$Group.1[y$x > 0]
 #########
 ## Data
 #########
-
+## Only want studies with more than one habitat in
 studies <- as.data.frame(aggregate(garden$Habitat, list(garden$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
 studies <- studies[studies$x > 1,]
 habitat <- garden[garden$Study.ID %in% studies$Group.1,] ## 176 rows
+habitat <- habitat[!(habitat$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),] # 132 rows
 
-habitat <- habitat[complete.cases(habitat$Taxon.Richness),] ## 135
+habitat <- habitat[complete.cases(habitat$Corrected_Taxon.Richness),] ## 91
 table(habitat$Habitat)
 table(habitat$Taxonimic.Level)
 
-habitat <- habitat[habitat$Taxonimic.Level == "Species",]
-
-
+habitat <- habitat[habitat$Taxonimic.Level == "Species",] # 87
 habitat <- droplevels(habitat)
 
-hist(habitat$Taxon.Richness)
-unique(habitat$Study.ID[habitat$Taxon.Richness > 100]) ## 2003_Thompson 1
+hist(habitat$Corrected_Taxon.Richness)
 
 any(habitat$Study.ID %in% sampled_effort_varies) ## At the moment, not
-# unique(habitat$Study.ID[which(habitat$Study.ID %in% sampled_effort_varies)])
-
-### Sampled area is now the issue
-table(habitat$Sampled.Area.Units, habitat$Study.ID)
-
-tapply(habitat$Sampled.Area, habitat$Study.ID, max)
-
-## This code is weak - I have one stud that is cm3, the rest are m2
-## This line will not work if there are any other units
-habitat$SampledArea_metres <- ifelse(habitat$Sampled.Area.Units == "m2", habitat$Sampled.Area, habitat$Sampled.Area*1e-6)
 
 #################
 ## Models
 #################
 
+Richness <- round(habitat$Corrected_Taxon.Richness)
 
+habitat1 <- glmer(Richness ~ Habitat + (1|Study.ID) + (1|Taxa), family = poisson, data = habitat)
+summary(habitat1) # reference = acid grassland (heath)
+
+habitat1_means <- model_Means(habitat1)
+
+png(file.path(figure_out, "Habitat_means.png"), pointsize=11)
+labs <- levels(habitat$Habitat)
+par(mar=c(10, 4, 1, 1))
+errbar(1:nrow(habitat1_means), exp(habitat1_means[,2]), exp(habitat1_means[,3]), exp(habitat1_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,40), las = 1, cex= 1, ylab = "")
+points(1:nrow(habitat1_means),exp(habitat1_means[,2]),col="black",bg="white",pch=19,cex=1)
+axis(1, at=1:nrow(habitat1_means), labels = labs, las = 2)
+mtext(expression(Species ~ Density ~ (per ~ m^{2})), side = 2, line = 2)
+dev.off()
 
 ###########################################################
 ## HABITAT AREA COMPARISONS
