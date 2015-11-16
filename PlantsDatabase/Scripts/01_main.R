@@ -1,5 +1,3 @@
-
-
 ##############
 ## FUNCTIONS
 ##############
@@ -8,9 +6,20 @@
 source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/RemoveDuplicates.R")
 source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesSimilarity.R")
 
-
+##############
+## libraries
+##############
 
 library(lattice)
+
+##############
+## FOLDERS
+##############
+
+figure_out <- "~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Figures"
+
+
+
 ##############
 ## DATA
 ##############
@@ -50,4 +59,7 @@ areas <- cbind(areas, t$V1)
 ############################
 
 similarity <- species_similarity(new_plants)
-levelplot(similarity)
+
+png(file.path(figure_out, "HabitatSimiarity.png"), height = 1000, width = 1000)
+levelplot(similarity, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "", xlab = "")
+dev.off()

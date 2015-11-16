@@ -6,7 +6,7 @@ species_similarity <- function(new_plants){
 		for(a in 1:length(new_plants)){
 			## all the other lists we are checkng it against
 			
-			mat[l,a] <- length(intersect(new_plants[[l]]$NBN.Name, new_plants[[a]]$NBN.Name))
+			mat[l,a] <- (length(intersect(new_plants[[l]]$NBN.Name, new_plants[[a]]$NBN.Name))/length(unique(new_plants[[l]]$NBN.Name)))*100
 			
 		}
 			
