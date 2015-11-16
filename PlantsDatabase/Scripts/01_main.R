@@ -6,7 +6,11 @@
 
 
 source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/RemoveDuplicates.R")
+source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesSimilarity.R")
 
+
+
+library(lattice)
 ##############
 ## DATA
 ##############
@@ -45,3 +49,5 @@ areas <- cbind(areas, t$V1)
 ## Number of Similar Species
 ############################
 
+similarity <- species_similarity(new_plants)
+levelplot(similarity)
