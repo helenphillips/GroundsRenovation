@@ -1,11 +1,13 @@
-remove_duplicates <- function(plants){
+remove_duplicates <- function(plants, columns){
 	
-	unique_areas <- unique(plants$Code)
+	col <- which(names(plants) == columns)
+	
+	unique_areas <- unique(plants[,col])
 	new_plants <- list()
 
 	for(a in 1:length(unique_areas)){
 	
-		tmp <- plants[plants$Code == unique_areas[a],]
+		tmp <- plants[plants[,col] == unique_areas[a],]
 		
 		if(length(tmp$NBN.Name) != length(unique(tmp$NBN.Name))){
 			
