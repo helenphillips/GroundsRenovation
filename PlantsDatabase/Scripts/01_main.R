@@ -41,7 +41,7 @@ u <- aggregate(plants$NBN.Name, list(plants$Code), function(x){unique = length(u
 areas <- cbind(l, u$x)
 
 
-new_plants <- remove_duplicates(plants)
+new_plants <- remove_duplicates(plants, columns = "Habitat")
 
 
 ## Check that length of each habitat is expected
@@ -58,8 +58,15 @@ areas <- cbind(areas, t$V1)
 ## Number of Similar Species
 ############################
 
-similarity <- species_similarity(new_plants)
+similarity_habitat <- species_similarity(new_plants)
 
-png(file.path(figure_out, "HabitatSimiarity.png"), height = 1000, width = 1000)
-levelplot(similarity, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "", xlab = "")
+png(file.path(figure_out, "HabitatSimiarity.png"), height = 700, width = 700)
+levelplot(similarity_habitat, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45, cex=1.1), y=list(cex=1.1)), ylab = "", xlab = "",cex.txt=1.5)
+dev.off()
+
+
+new_plants_area <- remove_duplicates(plants, columns = "Code")
+similarity_area <- species_similarity(new_plants_area)
+png(file.path(figure_out, "AreaSimiarity.png"), height = 1000, width = 1000)
+levelplot(similarity_area, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "", xlab = "")
 dev.off()
