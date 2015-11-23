@@ -148,12 +148,9 @@ table(areas$Taxonimic.Level)
 areas <- areas[areas$Taxonimic.Level == "Species",]
 ## Don't want studies where sampled area != habitat area
 
-sampled_area <- aggregate(areas$Total_sampledArea_metres, list(areas$Study.ID), function(x){var_area = mean(x, na.rm=TRUE)})
-studied_exclude <- sampled_area$Group.1[!is.na(sampled_area$x)]
-others <- c("2015_Noble 2", "2005_Leather 1","2008_Hartley 2")
-studied_exclude <- factor(c(as.character(studied_exclude),as.character(others)))
+studied_include <- c("2000_Linton 1", "2015_Sirohi 1")
 
-areas <- areas[!(areas$Study.ID %in% studied_exclude),]
+areas <- areas[areas$Study.ID %in% studied_include,]
 areas <- droplevels(areas)
 nrow(areas) ## 145
 
@@ -164,10 +161,10 @@ hist(areas$Taxon.Richness) ## Excellent
 levels(areas$Habitat.Area.Units)
 areas$Habitat.Area_ha <- convertArea(areas$Habitat.Area, areas$Habitat.Area.Units, type = c("habitat"))
 
-habs <- c("amenity grass/turf","broadleaved woodland","fen (incl. reedbed)","marginal vegetation (pond edge)","ponds","short/perennial vegetation","species-rich hedgerow")               
+habs <- c("amenity grass/turf","broadleaved woodland","ponds","short/perennial vegetation")               
 
 areas <- areas[areas$Habitat %in% habs,]
-nrow(areas) #128
+nrow(areas) #77
 
 areas <- droplevels(areas)
 
@@ -187,8 +184,10 @@ areas$Habitat <- relevel(areas$Habitat, ref = "ponds")
 ## Models
 #################
 richness <- round(areas$Taxon.Richness)
-area1 <- glmer(richness ~ Habitat.Area_ha * Habitat + (1|Study.ID), family = poisson, data = areas)
-area2 <- glm(richness  ~ Habitat.Area_ha * Habitat + Study.ID, family = poisson, data = areas)
+area1 <- glm(richness ~ Habitat.Area_ha * Habitat, family = poisson, data = areas)
+
+par(mfrow=c(2,2))
+plot(area1)
 
 Anova(area1)
 
