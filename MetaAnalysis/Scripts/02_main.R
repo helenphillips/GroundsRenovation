@@ -77,7 +77,7 @@ dev.off()
 garden$Total_sampledArea <- garden$Sampled.Area * garden$Number.of.samples
 garden$Total_sampledArea_metres <- convertArea(garden$Total_sampledArea, garden$Sampled.Area.Units, "sample")
 
-garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Total_sampledArea_metres), garden$Taxon.Richness, garden$Taxon.Richness/garden$Total_sampledArea_metres)
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Total_sampledArea_metres), garden$Taxon.Richness, garden$Taxon.Richness/garden$Total_sampledArea_metres) ## Will need to change this when we have a slope for sampled area vs. richness
 
 hist(garden$Corrected_Taxon.Richness)
 garden$Study.ID[garden$Corrected_Taxon.Richness > 100] ## Because its cubic metres...
@@ -98,11 +98,11 @@ studies <- studies[studies$x > 1,]
 habitat <- garden[garden$Study.ID %in% studies$Group.1,] ## 176 rows
 habitat <- habitat[!(habitat$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),] # 208 rows
 
-habitat <- habitat[complete.cases(habitat$Corrected_Taxon.Richness),] ## 91
+habitat <- habitat[complete.cases(habitat$Corrected_Taxon.Richness),] ## 165
 table(habitat$Habitat)
 table(habitat$Taxonimic.Level)
 
-habitat <- habitat[habitat$Taxonimic.Level == "Species",] # 167
+habitat <- habitat[habitat$Taxonimic.Level == "Species",] # 161
 habitat <- droplevels(habitat)
 
 hist(habitat$Corrected_Taxon.Richness)
@@ -142,29 +142,54 @@ studies_area <- area$Group.1[area$x > 0]
 areas <- garden[garden$Study.ID %in% studies_area,]
 
 
-hist(areas$Taxon.Richness) ## Ooooo looks nice
+hist(areas$Taxon.Richness) ## ok
 
 table(areas$Taxonimic.Level)
 areas <- areas[areas$Taxonimic.Level == "Species",]
-## Variation in effort or sampled area??
+## Don't want studies where sampled area != habitat area
 
-any(areas$Study.ID %in% sampled_area_varies)
-areas <- droplevels(areas[areas$Study.ID != "2006_Kadas 1",])
+sampled_area <- aggregate(areas$Total_sampledArea_metres, list(areas$Study.ID), function(x){var_area = mean(x, na.rm=TRUE)})
+studied_exclude <- sampled_area$Group.1[!is.na(sampled_area$x)]
+others <- c("2015_Noble 2", "2005_Leather 1","2008_Hartley 2")
+studied_exclude <- factor(c(as.character(studied_exclude),as.character(others)))
+
+areas <- areas[!(areas$Study.ID %in% studied_exclude),]
+areas <- droplevels(areas)
+nrow(areas) ## 145
+
+hist(areas$Taxon.Richness) ## Excellent
 
 
-table(areas$Habitat.Area.Units)
-areas
+# Units
+levels(areas$Habitat.Area.Units)
+areas$Habitat.Area_ha <- convertArea(areas$Habitat.Area, areas$Habitat.Area.Units, type = c("habitat"))
 
-table(areas$Habitat, areas$Study.ID)
+habs <- c("amenity grass/turf","broadleaved woodland","fen (incl. reedbed)","marginal vegetation (pond edge)","ponds","short/perennial vegetation","species-rich hedgerow")               
+
+areas <- areas[areas$Habitat %in% habs,]
+nrow(areas) #128
+
+areas <- droplevels(areas)
+
+tapply(areas$Habitat.Area_ha, areas$Habitat, summary)
+tapply(areas$Taxon.Richness, areas$Habitat, summary)
 
 
+pdf(file.path(figure_out, "AreaRichness.pdf"))
+for(h in 1:length(habs)){
+	plot(areas$Taxon.Richness[areas$Habitat == habs[h]] ~ areas$Habitat.Area_ha[areas$Habitat == habs[h]], col = areas$Study.ID, main = habs[h])
+}
+dev.off()
 
+areas$Habitat <- relevel(areas$Habitat, ref = "ponds")
 
 #################
 ## Models
 #################
 richness <- round(areas$Taxon.Richness)
-area1 <- glmer(richness ~ Habitat.Area * Habitat + (1|Study.ID), family = poisson, data = areas)
+area1 <- glmer(richness ~ Habitat.Area_ha * Habitat + (1|Study.ID), family = poisson, data = areas)
+area2 <- glm(richness  ~ Habitat.Area_ha * Habitat + Study.ID, family = poisson, data = areas)
+
 Anova(area1)
 
 
