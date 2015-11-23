@@ -17,6 +17,8 @@ nrow(plants) #5459
 
 names(plants)[1:2] <- c("ID", "Habitat")
 
+levels(plants$Code)[levels(plants$Code) == "GR01"] <- "G01"
+levels(plants$Code)[levels(plants$Code) == "GR02"] <- "G02"
 
 new_plants <- remove_duplicates(plants, columns = "Code")
 
