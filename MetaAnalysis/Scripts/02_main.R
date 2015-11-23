@@ -44,10 +44,10 @@ dev.off()
 ## Study info 
 #################
 
-length(unique(garden$Study.ID)) ## 28
+length(unique(garden$Study.ID)) ## 31
 
 sources <- gsub("\\ [0-9]$", "", garden$Study.ID)
-length(unique(sources)) ## 19
+length(unique(sources)) ## 22
 
 
 
@@ -96,13 +96,13 @@ hist(temp$Corrected_Taxon.Richness) ## That's better, so for now, exclude those 
 studies <- as.data.frame(aggregate(garden$Habitat, list(garden$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
 studies <- studies[studies$x > 1,]
 habitat <- garden[garden$Study.ID %in% studies$Group.1,] ## 176 rows
-habitat <- habitat[!(habitat$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),] # 132 rows
+habitat <- habitat[!(habitat$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),] # 208 rows
 
 habitat <- habitat[complete.cases(habitat$Corrected_Taxon.Richness),] ## 91
 table(habitat$Habitat)
 table(habitat$Taxonimic.Level)
 
-habitat <- habitat[habitat$Taxonimic.Level == "Species",] # 87
+habitat <- habitat[habitat$Taxonimic.Level == "Species",] # 167
 habitat <- droplevels(habitat)
 
 hist(habitat$Corrected_Taxon.Richness)
