@@ -152,7 +152,7 @@ studied_include <- c("2000_Linton 1", "2015_Sirohi 1")
 
 areas <- areas[areas$Study.ID %in% studied_include,]
 areas <- droplevels(areas)
-nrow(areas) ## 145
+nrow(areas) ## 81
 
 hist(areas$Taxon.Richness) ## Excellent
 
@@ -191,6 +191,48 @@ plot(area1)
 
 Anova(area1)
 
+## Three level habitat
+habitats <- areas$Habitat
+levels(habitats)[levels(habitats) == "short/perennial vegetation"] <- "non-woodlands"
+levels(habitats)[levels(habitats) == "amenity grass/turf"] <- "non-woodlands"
+
+area2 <- glm(richness ~ Habitat.Area_ha * habitats, family = poisson, data = areas)
+
+anova(area1, area2, test = "Chisq") ## Not significant
+
+## Two level habitat
+habitats2 <- areas$Habitat
+levels(habitats2)[levels(habitats2) == "short/perennial vegetation"] <- "terrestrial"
+levels(habitats2)[levels(habitats2) == "amenity grass/turf"] <- "terrestrial"
+levels(habitats2)[levels(habitats2) == "broadleaved woodland"] <- "terrestrial"
+
+area3 <- glm(richness ~ Habitat.Area_ha * habitats2, family = poisson, data = areas)
+anova(area2, area3, test = "Chisq") ## Not significant
+
+## Just to check, but as expected, significantly different
+area4 <- glm(richness ~ Habitat.Area_ha, family = poisson, data = areas)
+anova(area3, area4, test = "Chisq")
+
+######## Model check
+
+par(mfrow=c(2,2))
+plot(area3) ## Not bad at all
 
 
+### Plotting
+newdat <- expand.grid(Habitat.Area_ha = seq(min(areas$Habitat.Area_ha), max(areas$Habitat.Area_ha), 0.1), habitats2 = c("terrestrial", "ponds"))
+to_plot_terrestrial <- predict(area3, newdata = newdat[newdat$habitats2 == "terrestrial",], type ="response")
+to_plot_ponds <- predict(area3, newdata = newdat[newdat$habitats2 == "ponds",], type ="response")
+
+
+area_cols <- areas$Habitat
+levels(area_cols)[levels(area_cols) == "ponds"] <- "blue" 
+levels(area_cols)[levels(area_cols) == "amenity grass/turf"] <- "red" 
+levels(area_cols)[levels(area_cols) == "broadleaved woodland"] <- "green" 
+levels(area_cols)[levels(area_cols) == "short/perennial vegetation"] <- "yellow" 
+area_cols <- as.character(area_cols)
+
+plot(to_plot_ponds ~ Habitat.Area_ha, newdat_ponds, type = "l", col = "blue", lwd = 2, ylab = "Species Richness", xlab = "Habitat Area (hectares)")
+lines(seq(min(areas$Habitat.Area_ha), max(areas$Habitat.Area_ha), 0.1), to_plot_terrestrial, col = "darkgreen", lwd = 2)
+points(jitter(areas$Taxon.Richness) ~ jitter(areas$Habitat.Area_ha), pch = 19, col = area_cols, cex = 0.7)
 
