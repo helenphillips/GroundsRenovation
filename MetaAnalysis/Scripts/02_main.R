@@ -195,6 +195,14 @@ legend(-0.4, 53, legend = levels(areas$Habitat), col = c("blue", "red", "green",
 legend(3.3, 54, legend=c("Ponds", "Terrestrial"), col = c("blue", "darkgreen"), lty = 1, lwd = 2, bty = "n", cex = 0.9, y.intersp=1.5)
 ## text(x = 3, y = 65.5, '{', srt = 180, cex = 2)
 dev.off()
+###########################################################
+## SAMPLING AREA COMPARISONS
+
+#########
+## Data
+#########
+sample_studies <- as.data.frame(aggregate(garden$Sampled.Area, list(garden$Study.ID), function(x){N = var(x, na.rm=TRUE)}))
+## None are particularly suitable
 
 
 
@@ -205,29 +213,35 @@ dev.off()
 ## Data
 #########
 ## Only want studies with more than one habitat in
-studies <- as.data.frame(aggregate(garden$Habitat, list(garden$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
+wanted_habs <- c("acid grassland (heath)","amenity grass/turf","broadleaved woodland","chalk grassland","fen (incl. reedbed)","ferns and cycad planting","hard standing","marginal vegetation (pond edge)","neutral grassland","orchard","ponds","short/perennial vegetation","species-poor grassland/semi-improved","species-poor hedgerow","species-rich hedgerow")
+habitat <- garden[garden$Habitat %in% wanted_habs,]
+studies <- as.data.frame(aggregate(habitat$Habitat, list(habitat$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
 studies <- studies[studies$x > 1,]
-habitat <- garden[garden$Study.ID %in% studies$Group.1,] ## 176 rows
-habitat <- habitat[!(habitat$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),] # 208 rows
+habitat <- habitat[habitat$Study.ID %in% studies$Group.1,] ## 185 rows
+habitat <- habitat[!(habitat$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),] # 141 rows
 
-habitat <- habitat[complete.cases(habitat$Corrected_Taxon.Richness),] ## 165
-table(habitat$Habitat)
+habitat <- habitat[complete.cases(habitat$Taxon.Richness),] ## 165
 table(habitat$Taxonimic.Level)
 
 habitat <- habitat[habitat$Taxonimic.Level == "Species",] # 161
 habitat <- droplevels(habitat)
 
-hist(habitat$Corrected_Taxon.Richness)
+hist(habitat$Taxon.Richness)
 
-any(habitat$Study.ID %in% sampled_effort_varies) ## At the moment, not
-
+table(habitat$Habitat)
+too_Few <- c("chalk grassland", "ferns and cycad planting", "hard standing", "orchard", "species-poor grassland/semi-improved","species-poor hedgerow")
+habitat <- droplevels(habitat[!(habitat$Habitat %in% too_Few),])
+table(habitat$Habitat, habitat$Study.ID)
+too_Few_studies <- c("1982_Lawton 1","2003_Wilson 1")
+habitat <- droplevels(habitat[!(habitat$Study.ID %in% too_Few_studies),]) ## 113
+table(habitat$Habitat)
 #################
 ## Models
 #################
 
-Richness <- round(habitat$Corrected_Taxon.Richness)
+Richness <- round(habitat$Taxon.Richness)
 
-habitat1 <- glmer(Richness ~ Habitat + (1|Study.ID) + (1|Taxa), family = poisson, data = habitat)
+habitat1 <- glmer(Richness ~ Habitat + (1|Study.ID), family = poisson, data = habitat)
 summary(habitat1) # reference = acid grassland (heath)
 
 habitat1_means <- model_Means(habitat1)
@@ -235,7 +249,7 @@ habitat1_means <- model_Means(habitat1)
 png(file.path(figure_out, "Habitat_means.png"), pointsize=11)
 labs <- levels(habitat$Habitat)
 par(mar=c(10, 4, 1, 1))
-errbar(1:nrow(habitat1_means), exp(habitat1_means[,2]), exp(habitat1_means[,3]), exp(habitat1_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,40), las = 1, cex= 1, ylab = "")
+errbar(1:nrow(habitat1_means), exp(habitat1_means[,2]), exp(habitat1_means[,3]), exp(habitat1_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,200), las = 1, cex= 1, ylab = "")
 points(1:nrow(habitat1_means),exp(habitat1_means[,2]),col="black",bg="white",pch=19,cex=1)
 axis(1, at=1:nrow(habitat1_means), labels = labs, las = 2)
 mtext(expression(Species ~ Density ~ (per ~ m^{2})), side = 2, line = 2)
