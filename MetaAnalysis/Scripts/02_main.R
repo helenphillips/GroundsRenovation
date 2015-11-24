@@ -87,49 +87,6 @@ hist(temp$Corrected_Taxon.Richness) ## That's better, so for now, exclude those 
 
 
 ###########################################################
-## HABITAT COMPARISONS
-
-#########
-## Data
-#########
-## Only want studies with more than one habitat in
-studies <- as.data.frame(aggregate(garden$Habitat, list(garden$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
-studies <- studies[studies$x > 1,]
-habitat <- garden[garden$Study.ID %in% studies$Group.1,] ## 176 rows
-habitat <- habitat[!(habitat$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),] # 208 rows
-
-habitat <- habitat[complete.cases(habitat$Corrected_Taxon.Richness),] ## 165
-table(habitat$Habitat)
-table(habitat$Taxonimic.Level)
-
-habitat <- habitat[habitat$Taxonimic.Level == "Species",] # 161
-habitat <- droplevels(habitat)
-
-hist(habitat$Corrected_Taxon.Richness)
-
-any(habitat$Study.ID %in% sampled_effort_varies) ## At the moment, not
-
-#################
-## Models
-#################
-
-Richness <- round(habitat$Corrected_Taxon.Richness)
-
-habitat1 <- glmer(Richness ~ Habitat + (1|Study.ID) + (1|Taxa), family = poisson, data = habitat)
-summary(habitat1) # reference = acid grassland (heath)
-
-habitat1_means <- model_Means(habitat1)
-
-png(file.path(figure_out, "Habitat_means.png"), pointsize=11)
-labs <- levels(habitat$Habitat)
-par(mar=c(10, 4, 1, 1))
-errbar(1:nrow(habitat1_means), exp(habitat1_means[,2]), exp(habitat1_means[,3]), exp(habitat1_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,40), las = 1, cex= 1, ylab = "")
-points(1:nrow(habitat1_means),exp(habitat1_means[,2]),col="black",bg="white",pch=19,cex=1)
-axis(1, at=1:nrow(habitat1_means), labels = labs, las = 2)
-mtext(expression(Species ~ Density ~ (per ~ m^{2})), side = 2, line = 2)
-dev.off()
-
-###########################################################
 ## HABITAT AREA COMPARISONS
 
 #########
@@ -224,15 +181,65 @@ newdat <- expand.grid(Habitat.Area_ha = seq(min(areas$Habitat.Area_ha), max(area
 to_plot_terrestrial <- predict(area3, newdata = newdat[newdat$habitats2 == "terrestrial",], type ="response")
 to_plot_ponds <- predict(area3, newdata = newdat[newdat$habitats2 == "ponds",], type ="response")
 
-
+pdf(file.path(figure_out, "SARs.pdf"), height = 5)
 area_cols <- areas$Habitat
 levels(area_cols)[levels(area_cols) == "ponds"] <- "blue" 
 levels(area_cols)[levels(area_cols) == "amenity grass/turf"] <- "red" 
 levels(area_cols)[levels(area_cols) == "broadleaved woodland"] <- "green" 
 levels(area_cols)[levels(area_cols) == "short/perennial vegetation"] <- "yellow" 
 area_cols <- as.character(area_cols)
-
-plot(to_plot_ponds ~ Habitat.Area_ha, newdat_ponds, type = "l", col = "blue", lwd = 2, ylab = "Species Richness", xlab = "Habitat Area (hectares)")
+plot(to_plot_ponds ~ Habitat.Area_ha, newdat_ponds, type = "l", col = "blue", lwd = 2, ylab = "Species Richness", xlab = "Habitat Area (hectares)", ylim = c(0, 50))
 lines(seq(min(areas$Habitat.Area_ha), max(areas$Habitat.Area_ha), 0.1), to_plot_terrestrial, col = "darkgreen", lwd = 2)
 points(jitter(areas$Taxon.Richness) ~ jitter(areas$Habitat.Area_ha), pch = 19, col = area_cols, cex = 0.7)
+legend(-0.4, 53, legend = levels(areas$Habitat), col = c("blue", "red", "green", "yellow"), pch = 19, pt.cex = 0.7, bty="n", cex=0.7)
+legend(3.3, 54, legend=c("Ponds", "Terrestrial"), col = c("blue", "darkgreen"), lty = 1, lwd = 2, bty = "n", cex = 0.9, y.intersp=1.5)
+## text(x = 3, y = 65.5, '{', srt = 180, cex = 2)
+dev.off()
+
+
+
+###########################################################
+## HABITAT COMPARISONS
+
+#########
+## Data
+#########
+## Only want studies with more than one habitat in
+studies <- as.data.frame(aggregate(garden$Habitat, list(garden$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
+studies <- studies[studies$x > 1,]
+habitat <- garden[garden$Study.ID %in% studies$Group.1,] ## 176 rows
+habitat <- habitat[!(habitat$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),] # 208 rows
+
+habitat <- habitat[complete.cases(habitat$Corrected_Taxon.Richness),] ## 165
+table(habitat$Habitat)
+table(habitat$Taxonimic.Level)
+
+habitat <- habitat[habitat$Taxonimic.Level == "Species",] # 161
+habitat <- droplevels(habitat)
+
+hist(habitat$Corrected_Taxon.Richness)
+
+any(habitat$Study.ID %in% sampled_effort_varies) ## At the moment, not
+
+#################
+## Models
+#################
+
+Richness <- round(habitat$Corrected_Taxon.Richness)
+
+habitat1 <- glmer(Richness ~ Habitat + (1|Study.ID) + (1|Taxa), family = poisson, data = habitat)
+summary(habitat1) # reference = acid grassland (heath)
+
+habitat1_means <- model_Means(habitat1)
+
+png(file.path(figure_out, "Habitat_means.png"), pointsize=11)
+labs <- levels(habitat$Habitat)
+par(mar=c(10, 4, 1, 1))
+errbar(1:nrow(habitat1_means), exp(habitat1_means[,2]), exp(habitat1_means[,3]), exp(habitat1_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,40), las = 1, cex= 1, ylab = "")
+points(1:nrow(habitat1_means),exp(habitat1_means[,2]),col="black",bg="white",pch=19,cex=1)
+axis(1, at=1:nrow(habitat1_means), labels = labs, las = 2)
+mtext(expression(Species ~ Density ~ (per ~ m^{2})), side = 2, line = 2)
+dev.off()
+
+
 
