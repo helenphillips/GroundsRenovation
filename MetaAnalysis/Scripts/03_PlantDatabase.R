@@ -27,18 +27,16 @@ year <- c(2014, 2013)
 
 new_plants_2014 <- list()
 for(list in 1:length(new_plants)){
-	new_plants_2014[[list]] <- new_plants[[list]][new_plants[[list]]$YearLastRecorded == year,]
+	new_plants_2014[[list]] <- new_plants[[list]][new_plants[[list]]$YearLastRecorded %in% year,]
 	
 }
 
-newdat <- as.data.frame(do.call(rbind, lapply(new_plants, function(x) nrow(x))))
-newdat$code <- rownames(newdat)
+newdat <- as.data.frame(do.call(rbind, lapply(new_plants_2014, function(x) nrow(x))))
 names(newdat)[1] <- "SpeciesRichness"
-newdat <- newdat[order(newdat$code),]
+firstline <- as.data.frame(do.call(rbind, lapply(new_plants, `[`,1,)))
 
-firstline <- as.data.frame(do.call(rbind, lapply(new_plants_2014, `[`,1,)))
+newdat <- cbind(newdat, firstline)
 
-newdat$Habitat <- firstline$Habitat[order(firstline$Code)]
-
+newdat <- newdat[order(newdat$Code),]
 
 write.csv(newdat, file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Papers/PlantsDatabase/PlantsDatabaseExtract_2015_11_18.csv")
