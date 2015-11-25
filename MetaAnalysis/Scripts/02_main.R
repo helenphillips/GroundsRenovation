@@ -255,5 +255,17 @@ axis(1, at=1:nrow(habitat1_means), labels = labs, las = 2)
 mtext(expression(Species ~ Density ~ (per ~ m^{2})), side = 2, line = 2)
 dev.off()
 
+### Amenity is a bit ridiculous
 
+habitat$Study.ID[habitat$Habitat == "amenity grass/turf"]
+table(habitat$Taxa, habitat$Habitat) ## might be that
+
+
+taxa <- habitat$Taxa
+taxa <- ifelse(taxa == "Plants", "Plants", "Inverts")
+table(habitat$Habitat, taxa)
+table(habitat$Study.ID, taxa)
+habitat2 <- glmer(Richness ~ Habitat + (1|Study.ID), family = poisson, data = habitat)
+summary(habitat2)
+plot(habitat2)
 
