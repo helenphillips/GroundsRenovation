@@ -105,18 +105,11 @@ table(areas$Taxonimic.Level)
 areas <- areas[areas$Taxonimic.Level == "Species",]
 ## Don't want studies where sampled area != habitat area
 
-
-## Can we include the widlife garden data
-plot(areas$Taxon.Richness[areas$Study.ID == "PlantDatabaseExtract"] ~ areas$Habitat.Area[areas$Study.ID == "PlantDatabaseExtract"])
-## Maybe some
-
-
-
-studied_include <- c("2000_Linton 1", "2015_Sirohi 1", "PlantDatabaseExtract")
+studied_include <- c("2000_Linton 1", "2015_Sirohi 1")
 
 areas <- areas[areas$Study.ID %in% studied_include,]
 areas <- droplevels(areas)
-nrow(areas) ## 142
+nrow(areas) ## 81
 
 hist(areas$Taxon.Richness) ## Excellent
 
@@ -125,13 +118,10 @@ hist(areas$Taxon.Richness) ## Excellent
 levels(areas$Habitat.Area.Units)
 areas$Habitat.Area_ha <- convertArea(areas$Habitat.Area, areas$Habitat.Area.Units, type = c("habitat"))
 
-table(areas$Habitat)
-habs <- c("amenity grass/turf","broadleaved woodland",
-# "marginal vegetation (pond edge)",  "species-rich hedgerow"
-"ponds","short/perennial vegetation")               
+habs <- c("amenity grass/turf","broadleaved woodland","ponds","short/perennial vegetation")               
 
 areas <- areas[areas$Habitat %in% habs,]
-nrow(areas) #99
+nrow(areas) #77
 
 areas <- droplevels(areas)
 
@@ -147,21 +137,15 @@ dev.off()
 
 areas$Habitat <- relevel(areas$Habitat, ref = "ponds")
 
-areas$Taxa
-table(areas$Habitat, areas$Taxa)
-table(areas$Study.ID, areas$Taxa)
-table(areas$Habitat, areas$Study.ID)
 #################
 ## Models
 #################
-taxaHab <- paste(areas$Taxa, areas$Habitat, sep=" ")
-
 richness <- round(areas$Taxon.Richness)
-area1 <- glm(richness ~ Habitat.Area_ha * taxaHab, family = poisson, data = areas)
+area1 <- glm(richness ~ Habitat.Area_ha * Habitat, family = poisson, data = areas)
 
 par(mfrow=c(2,2))
 plot(area1)
-summary(area1)
+
 Anova(area1)
 
 ## Three level habitat
@@ -171,7 +155,7 @@ levels(habitats)[levels(habitats) == "amenity grass/turf"] <- "non-woodlands"
 
 area2 <- glm(richness ~ Habitat.Area_ha * habitats, family = poisson, data = areas)
 
-anova(area1, area2, test = "Chisq") ## Significant
+anova(area1, area2, test = "Chisq") ## Not significant
 
 ## Two level habitat
 habitats2 <- areas$Habitat
@@ -180,13 +164,17 @@ levels(habitats2)[levels(habitats2) == "amenity grass/turf"] <- "terrestrial"
 levels(habitats2)[levels(habitats2) == "broadleaved woodland"] <- "terrestrial"
 
 area3 <- glm(richness ~ Habitat.Area_ha * habitats2, family = poisson, data = areas)
-anova(area1, area3, test = "Chisq") ## Significant
+anova(area2, area3, test = "Chisq") ## Not significant
 
 ## Just to check, but as expected, significantly different
 area4 <- glm(richness ~ Habitat.Area_ha, family = poisson, data = areas)
-anova(area1, area4, test = "Chisq")
+anova(area3, area4, test = "Chisq")
 
 ######## Model check
+
+par(mfrow=c(2,2))
+plot(area3) ## Not bad at all
+
 
 ### Plotting
 newdat <- expand.grid(Habitat.Area_ha = seq(min(areas$Habitat.Area_ha), max(areas$Habitat.Area_ha), 0.1), habitats2 = c("terrestrial", "ponds"))
