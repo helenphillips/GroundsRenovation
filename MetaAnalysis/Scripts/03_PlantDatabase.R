@@ -22,6 +22,7 @@ levels(plants$Code)[levels(plants$Code) == "GR02"] <- "G02"
 
 new_plants <- remove_duplicates(plants, columns = "Code")
 
+<<<<<<< HEAD
 ## Just taking plants that have records in 2014 (or 2013)
 year <- c(2014, 2013)
 
