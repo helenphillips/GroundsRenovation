@@ -22,13 +22,21 @@ levels(plants$Code)[levels(plants$Code) == "GR02"] <- "G02"
 
 new_plants <- remove_duplicates(plants, columns = "Code")
 
+## Just taking plants that have records in 2014 (or 2013)
+year <- c(2014, 2013)
+
+new_plants_2014 <- list()
+for(list in 1:length(new_plants)){
+	new_plants_2014[[list]] <- new_plants[[list]][new_plants[[list]]$YearLastRecorded == year,]
+	
+}
 
 newdat <- as.data.frame(do.call(rbind, lapply(new_plants, function(x) nrow(x))))
 newdat$code <- rownames(newdat)
 names(newdat)[1] <- "SpeciesRichness"
 newdat <- newdat[order(newdat$code),]
 
-firstline <- as.data.frame(do.call(rbind, lapply(new_plants, `[`,1,)))
+firstline <- as.data.frame(do.call(rbind, lapply(new_plants_2014, `[`,1,)))
 
 newdat$Habitat <- firstline$Habitat[order(firstline$Code)]
 
