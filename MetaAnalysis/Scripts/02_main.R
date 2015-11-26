@@ -74,10 +74,17 @@ dev.off()
 #################
 
 ## Correcting sampling area
-garden$Total_sampledArea <- garden$Sampled.Area * garden$Number.of.samples
-garden$Total_sampledArea_metres <- convertArea(garden$Total_sampledArea, garden$Sampled.Area.Units, "sample")
+garden$Sampled.Area_metres <- convertArea(garden$Sampled.Area, garden$Sampled.Area.Units, "sample")
 
-garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Total_sampledArea_metres), garden$Taxon.Richness, garden$Taxon.Richness/garden$Total_sampledArea_metres) ## Will need to change this when we have a slope for sampled area vs. richness
+
+sar <- function(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, x=0.1){
+	c <- log(S)/(log(A+1)^x)
+	new_S <- c*log(10)^x
+	new_S <- exp(new_S)
+	return(new_S)
+}
+
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, sar()) ## Will need to change this when we have a slope for sampled area vs. richness
 
 hist(garden$Corrected_Taxon.Richness)
 garden$Study.ID[garden$Corrected_Taxon.Richness > 100] ## Because its cubic metres...
