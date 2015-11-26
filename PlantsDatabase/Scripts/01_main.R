@@ -5,12 +5,14 @@
 
 source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/RemoveDuplicates.R")
 source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesSimilarity.R")
+source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesOverTime.R")
 
 ##############
 ## libraries
 ##############
 
 library(lattice)
+library(ggplot2)
 
 ##############
 ## FOLDERS
@@ -34,6 +36,8 @@ nrow(plants) #5459
 
 names(plants)[1:2] <- c("ID", "Habitat")
 
+levels(plants$Code)[levels(plants$Code) == "GR01"] <- "G01"
+levels(plants$Code)[levels(plants$Code) == "GR02"] <- "G02"
 
 ## Check how many are duplicates in each area
 l <- aggregate(plants$NBN.Name, list(plants$Code), function(x){length = length(x)})
@@ -45,10 +49,10 @@ new_plants <- remove_duplicates(plants, columns = "Habitat")
 
 
 ## Check that length of each habitat is expected
-t <- as.data.frame(do.call(rbind, lapply(new_plants, function(x) nrow(x))))
-t$Group <- rownames(t)
-t <- t[order(t$Group),]
-areas <- cbind(areas, t$V1)
+#t <- as.data.frame(do.call(rbind, lapply(new_plants, function(x) nrow(x))))
+#t$Group <- rownames(t)
+#t <- t[order(t$Group),]
+#areas <- cbind(areas, t$V1)
 ## Which it is
 
 
@@ -70,3 +74,23 @@ similarity_area <- species_similarity(new_plants_area)
 png(file.path(figure_out, "AreaSimiarity.png"), height = 1000, width = 1000)
 levelplot(similarity_area, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "", xlab = "")
 dev.off()
+
+
+
+############################
+## Species over time
+############################
+
+
+y.axis_area <- seq(1, length(new_plants_area), 1)
+x.axis <- c(1995, 2015)
+
+Species_over_time(new_plants_area, x.axis, y.axis_areas)
+y.axis <- seq(1, length(new_plants), 1)
+Species_over_time(new_plants, x.axis, y.axis)
+
+
+
+
+
+
