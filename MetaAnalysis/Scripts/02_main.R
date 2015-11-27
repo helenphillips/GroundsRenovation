@@ -77,18 +77,22 @@ dev.off()
 garden$Sampled.Area_metres <- convertArea(garden$Sampled.Area, garden$Sampled.Area.Units, "sample")
 
 
-sar <- function(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, x=0.1){
-	c <- log(S)/(log(A+1)^x)
-	new_S <- c*log(10)^x
-	new_S <- exp(new_S)
-	return(new_S)
-}
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, calculate_density_cSAR()) ## 
 
-garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, sar()) ## 
+
+
 
 levels(garden$Sampled.Area.Units)
 not_areas <- c("Minutes (pond net)", "Minutes (sweep netting)")
 garden$Corrected_Taxon.Richness <- ifelse(garden$Sampled.Area.Units %in% not_areas, garden$Taxon.Richness, garden$Corrected_Taxon.Richness) ## For those sampling efforts which are not areas, and therefore not following c-SAR
+
+## Calculate a species density for when an entire area has been sampled.
+## AS species density varies within fragment area
+
+
+
+
+
 
 ## TODO: Problem with sampled areas that are less than 1m2
 
@@ -98,14 +102,8 @@ garden$Study.ID[garden$Corrected_Taxon.Richness > 100] ## Because its cubic metr
 head(garden[garden$Study.ID == "2003_Thompson 1",]) ## Probably ok
 head(garden[garden$Study.ID == "2015_Smith 1",]) ## Family anyway
 head(garden[garden$Study.ID == "2006_SmithA 1",]) ## Tiny sampled area
-head(garden[garden$Study.ID == "2006_SmithA 2",]) ## cm3
+head(garden[garden$Study.ID == "2006_SmithA 2",]) ## 
 head(garden[garden$Study.ID == "2004_Helden 2",]) ## Probably ok
-head(garden[garden$Study.ID == "2003_Thompson 1",]) ## Probably ok
-
-
-temp <-garden[!(garden$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),]
-hist(temp$Corrected_Taxon.Richness) ## That's better, so for now, exclude those two Smith studies	
-
 
 ###########################################################
 ## HABITAT AREA COMPARISONS
@@ -229,7 +227,7 @@ sampled_area <- sampled_area[sampled_area$Taxonimic.Level == "Species",] ## 182
 sampled_area <- droplevels(sampled_area)
 
 table(sampled_area$Habitat)
-not_enough <- c("chalk grassland", "green roof", "marginal vegetation (pond edge)", "neutral grassland", "Not present in NHM", "pecies-poor grassland/semi-improved", "species-poor hedgerow")
+not_enough <- c("chalk grassland", "green roof", "marginal vegetation (pond edge)", "Not present in NHM", "species-poor hedgerow", "Unsure/Not Clear", "Unspecified grass/meadows")
 
 sampled_area <- sampled_area[!(sampled_area$Habitat %in% not_enough),] ## 166
 
@@ -237,7 +235,31 @@ sample_studies <- as.data.frame(aggregate(sampled_area$Habitat, list(sampled_are
 sample_studies <- sample_studies[sample_studies$x > 1,]
 
 sampled_area <- sampled_area[sampled_area$Study.ID %in% sample_studies$Group.1,] ## 88
+sampled_area <- droplevels(sampled_area)
+table(sampled_area$Habitat)
 
+tapply(sampled_area$Corrected_Taxon.Richness, sampled_area$Habitat, summary)
+
+table(sampled_area$Study.ID, sampled_area$Habitat)
+
+table(sampled_area$Study.ID, sampled_area$Taxa)
+
+exclude_these_studies <- c("2003_Thompson 1", "2006_SmithA 1", "2006_SmithA 2")
+sampled_area <- sampled_area[!(sampled_area$Study.ID %in% exclude_these_studies),] # 38
+
+
+#########
+## Model
+#########
+taxa <- sampled_area$Taxa
+levels(taxa)[levels(taxa) == "Collembola"] <- "Inverts"
+levels(taxa)[levels(taxa) == "Earthworms"] <- "Inverts"
+levels(taxa)[levels(taxa) == "Ground beetles"] <- "Inverts"
+
+
+density1 <- glmer(round(Corrected_Taxon.Richness) ~ Habitat + taxa + (1|Study.ID), data = sampled_area, family = poisson)
+summary(density1)
+plot(effect("Habitat", density1))
 
 ###########################################################
 ## HABITAT COMPARISONS
