@@ -84,10 +84,24 @@ sar <- function(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, x=0.1){
 	return(new_S)
 }
 
-garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, sar()) ## Will need to change this when we have a slope for sampled area vs. richness
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, sar()) ## 
+
+levels(garden$Sampled.Area.Units)
+not_areas <- c("Minutes (pond net)", "Minutes (sweep netting)")
+garden$Corrected_Taxon.Richness <- ifelse(garden$Sampled.Area.Units %in% not_areas, garden$Taxon.Richness, garden$Corrected_Taxon.Richness) ## For those sampling efforts which are not areas, and therefore not following c-SAR
+
+## TODO: Problem with sampled areas that are less than 1m2
 
 hist(garden$Corrected_Taxon.Richness)
 garden$Study.ID[garden$Corrected_Taxon.Richness > 100] ## Because its cubic metres...
+
+head(garden[garden$Study.ID == "2003_Thompson 1",]) ## Probably ok
+head(garden[garden$Study.ID == "2015_Smith 1",]) ## Family anyway
+head(garden[garden$Study.ID == "2006_SmithA 1",]) ## Tiny sampled area
+head(garden[garden$Study.ID == "2006_SmithA 2",]) ## cm3
+head(garden[garden$Study.ID == "2004_Helden 2",]) ## Probably ok
+head(garden[garden$Study.ID == "2003_Thompson 1",]) ## Probably ok
+
 
 temp <-garden[!(garden$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),]
 hist(temp$Corrected_Taxon.Richness) ## That's better, so for now, exclude those two Smith studies	
@@ -204,13 +218,25 @@ legend(3.3, 54, legend=c("Ponds", "Terrestrial"), col = c("blue", "darkgreen"), 
 dev.off()
 ###########################################################
 ## SAMPLING AREA COMPARISONS
+## Species Density models
 
 #########
 ## Data
 #########
-sample_studies <- as.data.frame(aggregate(garden$Sampled.Area, list(garden$Study.ID), function(x){N = var(x, na.rm=TRUE)}))
-## None are particularly suitable
+sampled_area <- garden[!(is.na(garden$Sampled.Area)),] ## 232
+sampled_area <- sampled_area[!(sampled_area$Sampled.Area.Units %in% not_areas),] ## 186
+sampled_area <- sampled_area[sampled_area$Taxonimic.Level == "Species",] ## 182
+sampled_area <- droplevels(sampled_area)
 
+table(sampled_area$Habitat)
+not_enough <- c("chalk grassland", "green roof", "marginal vegetation (pond edge)", "neutral grassland", "Not present in NHM", "pecies-poor grassland/semi-improved", "species-poor hedgerow")
+
+sampled_area <- sampled_area[!(sampled_area$Habitat %in% not_enough),] ## 166
+
+sample_studies <- as.data.frame(aggregate(sampled_area$Habitat, list(sampled_area$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
+sample_studies <- sample_studies[sample_studies$x > 1,]
+
+sampled_area <- sampled_area[sampled_area$Study.ID %in% sample_studies$Group.1,] ## 88
 
 
 ###########################################################
