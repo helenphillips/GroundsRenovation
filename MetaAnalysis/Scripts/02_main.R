@@ -79,14 +79,15 @@ garden$Sampled.Area_metres <- convertArea(garden$Sampled.Area, garden$Sampled.Ar
 ## Correcting habtiat area
 garden$Habitat.Area_metres <- convertArea(garden$Habitat.Area, garden$Habitat.Area.Units, "habitat")
 
+garden$SpeciesDensity <- FALSE
 garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, calculate_density_cSAR()) ## 
-
+garden$SpeciesDensity <- ifelse(!(is.na(garden$Sampled.Area_metres)), TRUE, FALSE)
 
 ## Calculate a species density for when an entire area has been sampled.
 ## AS species density varies within fragment area
 ## Want this when we have teh fragment area but no sampled area
 garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), calculate_density_iSAR(), garden$Corrected_Taxon.Richness)
-
+garden$SpeciesDensity <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), TRUE, garden$SpeciesDensity)
 
 
 
