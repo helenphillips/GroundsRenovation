@@ -251,14 +251,23 @@ sampled_area <- sampled_area[!(sampled_area$Study.ID %in% exclude_these_studies)
 ## Model
 #########
 taxa <- sampled_area$Taxa
-levels(taxa)[levels(taxa) == "Collembola"] <- "Inverts"
-levels(taxa)[levels(taxa) == "Earthworms"] <- "Inverts"
-levels(taxa)[levels(taxa) == "Ground beetles"] <- "Inverts"
+levels(taxa)[levels(taxa) != "Plants"] <- "Inverts"
+
 
 
 density1 <- glmer(round(Corrected_Taxon.Richness) ~ Habitat + taxa + (1|Study.ID), data = sampled_area, family = poisson)
 summary(density1)
 plot(effect("Habitat", density1))
+
+
+density <- round(sampled_area$Corrected_Taxon.Richness)
+testdensity <- glmer(density ~ Habitat + (1|Study.ID), data = sampled_area, family = poisson)
+density1_means <- model_Means(testdensity)
+
+errbar(1:nrow(density1_means), exp(density1_means[,2]), exp(density1_means[,3]), exp(density1_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "")
+points(1:nrow(density1_means),exp(density1_means[,2]),col="black",bg="white",pch=19,cex=1)
+
+plot(effect("Habitat", testdensity))
 
 ###########################################################
 ## HABITAT COMPARISONS
