@@ -10,10 +10,10 @@ model_Means <- function(model){
 	cmult <- 1.96 ## could use 1.96
 	newdat <- data.frame(
 	    newdat
-	    , plo = newdat$Richness-cmult*sqrt(pvar1) ## Fixed effects uncertanty only
-	    , phi = newdat$Richness +cmult*sqrt(pvar1)
-	    , tlo = newdat$Richness-cmult*sqrt(tvar1) ## Fixed effects uncertanty and RE variance
-	    , thi = newdat$Richness +cmult*sqrt(tvar1)
+	    , plo = newdat[2]-cmult*sqrt(pvar1) ## Fixed effects uncertanty only
+	    , phi = newdat[2] +cmult*sqrt(pvar1)
+	    , tlo = newdat[2]-cmult*sqrt(tvar1) ## Fixed effects uncertanty and RE variance
+	    , thi = newdat[2] +cmult*sqrt(tvar1)
 	)
 
 	return(newdat)
