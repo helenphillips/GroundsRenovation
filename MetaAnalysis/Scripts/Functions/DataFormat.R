@@ -9,8 +9,27 @@ convertArea <- function(column, column_units, type = c("sample", "habitat")){
 	
 	if(type == "sample"){
 		cat("Converting sample area to m2..\n")
-		new_areas <- ifelse(column_units == "cm3", new_areas*1e-6, new_areas)
-		cat('Currently only converts cm3 to m3....stop being lazy and write more code\n')
+		new_areas <- ifelse(column_units == "cm2", new_areas*0.0001, new_areas)
 	}
 	return(new_areas)
 }
+
+
+
+
+calculate_density_cSAR <- function(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, x=0.1){
+	c <- log(S)/(log(A+1)^x)
+	new_S <- c*log(10)^x
+	new_S <- exp(new_S)
+	return(new_S)
+}
+
+
+
+calculate_density_iSAR <- function(S=garden$Taxon.Richness, A=garden$Habitat.Area_metres, x=0.1, z=0.25){
+	a <- log(10)
+	c <- log(S)/log(A^(z-x))
+	samp_S <- (c*A^(z-x))*a^x
+	samp_S <- exp(samp_S)
+	return(samp_S)
+	}
