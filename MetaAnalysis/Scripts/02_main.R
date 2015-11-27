@@ -19,6 +19,7 @@ library(MuMIn)
 library(dplyr)
 library(car)
 library(Hmisc)
+library(effect)
 
 #################
 ## Locations
@@ -75,9 +76,16 @@ dev.off()
 
 ## Correcting sampling area
 garden$Sampled.Area_metres <- convertArea(garden$Sampled.Area, garden$Sampled.Area.Units, "sample")
-
+## Correcting habtiat area
+garden$Habitat.Area_metres <- convertArea(garden$Habitat.Area, garden$Habitat.Area.Units, "habitat")
 
 garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, calculate_density_cSAR()) ## 
+
+
+## Calculate a species density for when an entire area has been sampled.
+## AS species density varies within fragment area
+## Want this when we have teh fragment area but no sampled area
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), calculate_density_iSAR(), garden$Corrected_Taxon.Richness)
 
 
 
@@ -86,8 +94,6 @@ levels(garden$Sampled.Area.Units)
 not_areas <- c("Minutes (pond net)", "Minutes (sweep netting)")
 garden$Corrected_Taxon.Richness <- ifelse(garden$Sampled.Area.Units %in% not_areas, garden$Taxon.Richness, garden$Corrected_Taxon.Richness) ## For those sampling efforts which are not areas, and therefore not following c-SAR
 
-## Calculate a species density for when an entire area has been sampled.
-## AS species density varies within fragment area
 
 
 
