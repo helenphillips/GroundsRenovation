@@ -90,18 +90,11 @@ garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres) & !(
 garden$SpeciesDensity <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), TRUE, garden$SpeciesDensity)
 
 
-
 levels(garden$Sampled.Area.Units)
 not_areas <- c("Minutes (pond net)", "Minutes (sweep netting)")
 garden$Corrected_Taxon.Richness <- ifelse(garden$Sampled.Area.Units %in% not_areas, garden$Taxon.Richness, garden$Corrected_Taxon.Richness) ## For those sampling efforts which are not areas, and therefore not following c-SAR
+garden$SpeciesDensity <- ifelse(garden$Sampled.Area.Units %in% not_areas, FALSE, garden$SpeciesDensity) ## For those sampling efforts which are not areas, and therefore not following c-SAR
 
-
-
-
-
-
-
-## TODO: Problem with sampled areas that are less than 1m2
 
 hist(garden$Corrected_Taxon.Richness)
 garden$Study.ID[garden$Corrected_Taxon.Richness > 100] ## Because its cubic metres...
@@ -228,20 +221,19 @@ dev.off()
 #########
 ## Data
 #########
-sampled_area <- garden[!(is.na(garden$Sampled.Area)),] ## 232
-sampled_area <- sampled_area[!(sampled_area$Sampled.Area.Units %in% not_areas),] ## 186
+sampled_area <- garden[garden$SpeciesDensity == TRUE,] ## 354
 sampled_area <- sampled_area[sampled_area$Taxonimic.Level == "Species",] ## 182
-sampled_area <- droplevels(sampled_area)
+sampled_area <- droplevels(sampled_area) # 350
 
 table(sampled_area$Habitat)
-not_enough <- c("chalk grassland", "green roof", "marginal vegetation (pond edge)", "Not present in NHM", "species-poor hedgerow", "Unsure/Not Clear", "Unspecified grass/meadows")
+not_enough <- c("green roof", "Not present in NHM", "species-poor hedgerow", "Unsure/Not Clear", "Unspecified grass/meadows", "orchard", "ferns and cycad plantings", "fen (incl. reedbed)")
 
-sampled_area <- sampled_area[!(sampled_area$Habitat %in% not_enough),] ## 166
+sampled_area <- sampled_area[!(sampled_area$Habitat %in% not_enough),] ## 323
 
 sample_studies <- as.data.frame(aggregate(sampled_area$Habitat, list(sampled_area$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
 sample_studies <- sample_studies[sample_studies$x > 1,]
 
-sampled_area <- sampled_area[sampled_area$Study.ID %in% sample_studies$Group.1,] ## 88
+sampled_area <- sampled_area[sampled_area$Study.ID %in% sample_studies$Group.1,] ## 172
 sampled_area <- droplevels(sampled_area)
 table(sampled_area$Habitat)
 
@@ -252,7 +244,7 @@ table(sampled_area$Study.ID, sampled_area$Habitat)
 table(sampled_area$Study.ID, sampled_area$Taxa)
 
 exclude_these_studies <- c("2003_Thompson 1", "2006_SmithA 1", "2006_SmithA 2")
-sampled_area <- sampled_area[!(sampled_area$Study.ID %in% exclude_these_studies),] # 38
+sampled_area <- sampled_area[!(sampled_area$Study.ID %in% exclude_these_studies),] # 127
 
 
 #########
