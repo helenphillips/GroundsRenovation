@@ -1,8 +1,9 @@
 model_Means <- function(model){
 	if(!(any(names(model@frame) == "Habitat"))){stop(print("Function only works when using variable called 'Habitat'"))}
 	
-	newdat <- expand.grid(Habitat = levels(model@frame$Habitat),Richness = 0)
-	newdat$Richness <- predict(model,newdat,re.form=NA)
+	newdat <- expand.grid(Habitat = levels(model@frame$Habitat), response= 0)
+	names(newdat)[2] <- names(model@frame)[1]
+	newdat[2] <- predict(model,newdat,re.form=NA)
 	mm <- model.matrix(terms(model),newdat)
 	pvar1 <- diag(mm %*% tcrossprod(vcov(model),mm))
 	tvar1 <- pvar1+VarCorr(model)$Study.ID[1]  ## must be adapted for more complex models
