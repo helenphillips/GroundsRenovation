@@ -345,3 +345,18 @@ dev.off()
 
 
 
+
+
+
+#############################################
+### BIODIVERSITY CHANGE
+#############################################
+
+
+
+habitat_areas <- data.frame(
+Habitat = c("Broadleaved woodland", "Acid grassland (heath)", "Chalk grassland", "Neutral grassland", "Fen (incl. reedbed)", "Marginal vegetation", "Ponds", "Green roof", "Species-poor hedgerow", "Species-rich hedgerow", "Mulch", "Short/perennial vegetation", "Amenisty grass/turf", "Introduced shrubs", "Hard standing", "Fern and cycad planting", "Agricultural plants", "Paleogene Asteraceae", "Neogene grass", "Cretaceous Angiosperm shrubs"),
+Current_area_m2 = c(1978, 100, 425, 2050, 75, 190, 339, 9, 109, 77, 170, 373.9, 3657, 2000, 9506, 0, 0, 0, 0, 0),
+Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 0, 736, 518, 1049, 9076, 760, 570, 177, 157, 245)
+)
+
