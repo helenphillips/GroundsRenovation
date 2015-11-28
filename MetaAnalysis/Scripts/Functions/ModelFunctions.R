@@ -1,8 +1,10 @@
 model_Means <- function(model){
-	if(!(any(names(model@frame) == "Habitat"))){stop(print("Function only works when using variable called 'Habitat'"))}
+	#if(!(any(names(model@frame) == "Habitat"))){stop(print("Function only works when using variable called 'Habitat'"))}
 	
-	newdat <- expand.grid(Habitat = levels(model@frame$Habitat), response= 0)
+	newdat <- expand.grid(predictor = levels(model@frame[,2]), response= 0)
 	names(newdat)[2] <- names(model@frame)[1]
+	names(newdat)[1] <- names(model@frame)[2]
+	
 	newdat[2] <- predict(model,newdat,re.form=NA)
 	mm <- model.matrix(terms(model),newdat)
 	pvar1 <- diag(mm %*% tcrossprod(vcov(model),mm))
