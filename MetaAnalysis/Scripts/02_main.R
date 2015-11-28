@@ -5,7 +5,7 @@ source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/Google
 source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/CheckComparisons.R")
 source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/DataFormat.R")
 source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/ModelFunctions.R")
-
+source("~/Dropbox/AdriannasFunctions/model_plot.R")
 
 #################
 ## Libraries
@@ -264,7 +264,9 @@ density2 <- glmer(density ~ Habitat + taxa + (1|Study.ID), data = sampled_area, 
 anova(density1, density2)
 density3 <- glmer(density ~ Habitat + (1|Study.ID), data = sampled_area, family = poisson)
 
-summary(density1)
+summary(density3)
+model_plot(density3) ## That's ok
+
 
 
 # ##### INTERACTION PLOT ######
@@ -281,19 +283,15 @@ summary(density1)
 # dev.off()
 ##################
 
-habTaxa <- as.factor(paste(sampled_area$Habitat, taxa))
-density1b <- glmer(density ~ habTaxa + (1|Study.ID), data = sampled_area, family = poisson)
-density1b_means <- model_Means(density1b)
+density3_means <- model_Means(density3)
 png(file.path(figure_out, "Habitat_density.png"), pointsize=11)
-labs <- levels(habTaxa)
+labs <- levels(sampled_area$Habitat)
 par(mar=c(14, 4, 1, 1))
-errbar(1:nrow(density1b_means), exp(density1b_means[,2]), exp(density1b_means[,3]), exp(density1b_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "")
-points(1:nrow(density1b_means),exp(density1b_means[,2]),col="black",bg="white",pch=19,cex=1)
-axis(1, at=1:nrow(density1b_means), labels = labs, las = 2)
+errbar(1:nrow(density3_means), exp(density3_means[,2]), exp(density3_means[,3]), exp(density3_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "")
+points(1:nrow(density3_means),exp(density3_means[,2]),col="black",bg="white",pch=19,cex=1)
+axis(1, at=1:nrow(density3_means), labels = labs, las = 2)
 mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
 dev.off()
-
-
 
 
 ###########################################################
