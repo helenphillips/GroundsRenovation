@@ -222,16 +222,19 @@ dev.off()
 ## Data
 #########
 sampled_area <- garden[garden$SpeciesDensity == TRUE,] ## 354
-sampled_area <- sampled_area[sampled_area$Taxonimic.Level == "Species",] ## 182
-sampled_area <- droplevels(sampled_area) # 350
+sampled_area <- sampled_area[sampled_area$Taxonimic.Level == "Species",] ## 350
+sampled_area <- droplevels(sampled_area)
 
+table(sampled_area$Habitat, sampled_area$Study.ID)
 table(sampled_area$Habitat)
-not_enough <- c("green roof", "Not present in NHM", "species-poor hedgerow", "Unsure/Not Clear", "Unspecified grass/meadows", "orchard", "ferns and cycad plantings", "fen (incl. reedbed)")
+
+not_enough <- c("green roof", "Not present in NHM", "species-poor hedgerow", "Unsure/Not Clear", "Unspecified grass/meadows", "orchard", "ferns and cycad plantings", "fen (incl. reedbed)", "hard standing")
 
 sampled_area <- sampled_area[!(sampled_area$Habitat %in% not_enough),] ## 323
 
 sample_studies <- as.data.frame(aggregate(sampled_area$Habitat, list(sampled_area$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
 sample_studies <- sample_studies[sample_studies$x > 1,]
+## The studies with only one habitat in are amenity grasslands (pretty much), so not losing anything by removing
 
 sampled_area <- sampled_area[sampled_area$Study.ID %in% sample_studies$Group.1,] ## 172
 sampled_area <- droplevels(sampled_area)
@@ -245,6 +248,7 @@ table(sampled_area$Study.ID, sampled_area$Taxa)
 
 exclude_these_studies <- c("2003_Thompson 1", "2006_SmithA 1", "2006_SmithA 2")
 sampled_area <- sampled_area[!(sampled_area$Study.ID %in% exclude_these_studies),] # 127
+sampled_area <- droplevels(sampled_area) # 122
 
 
 #########
@@ -252,20 +256,45 @@ sampled_area <- sampled_area[!(sampled_area$Study.ID %in% exclude_these_studies)
 #########
 taxa <- sampled_area$Taxa
 levels(taxa)[levels(taxa) != "Plants"] <- "Inverts"
-
+table(sampled_area$Habitat, taxa)
 density <- round(sampled_area$Corrected_Taxon.Richness)
-density1 <- glmer(density ~ Habitat + (1|Study.ID), data = sampled_area, family = poisson)
-summary(density1)
-density1_means <- model_Means(density1)
 
+density1 <- glmer(density ~ Habitat * taxa + (1|Study.ID), data = sampled_area, family = poisson) ## Not convinved there is enough data for this model yet
+density2 <- glmer(density ~ Habitat + taxa + (1|Study.ID), data = sampled_area, family = poisson)
+anova(density1, density2)
+density3 <- glmer(density ~ Habitat + (1|Study.ID), data = sampled_area, family = poisson)
+
+summary(density1)
+
+
+# ##### INTERACTION PLOT ######
+# habTaxa <- as.factor(paste(sampled_area$Habitat, taxa))
+# density1b <- glmer(density ~ habTaxa + (1|Study.ID), data = sampled_area, family = poisson)
+# density1b_means <- model_Means(density1b)
+# png(file.path(figure_out, "Habitat_density.png"), pointsize=11)
+# labs <- levels(habTaxa)
+# par(mar=c(14, 4, 1, 1))
+# errbar(1:nrow(density1b_means), exp(density1b_means[,2]), exp(density1b_means[,3]), exp(density1b_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "")
+# points(1:nrow(density1b_means),exp(density1b_means[,2]),col="black",bg="white",pch=19,cex=1)
+# axis(1, at=1:nrow(density1b_means), labels = labs, las = 2)
+# mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
+# dev.off()
+##################
+
+habTaxa <- as.factor(paste(sampled_area$Habitat, taxa))
+density1b <- glmer(density ~ habTaxa + (1|Study.ID), data = sampled_area, family = poisson)
+density1b_means <- model_Means(density1b)
 png(file.path(figure_out, "Habitat_density.png"), pointsize=11)
-labs <- levels(sampled_area$Habitat)
+labs <- levels(habTaxa)
 par(mar=c(14, 4, 1, 1))
-errbar(1:nrow(density1_means), exp(density1_means[,2]), exp(density1_means[,3]), exp(density1_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "")
-points(1:nrow(density1_means),exp(density1_means[,2]),col="black",bg="white",pch=19,cex=1)
-axis(1, at=1:nrow(density1_means), labels = labs, las = 2)
+errbar(1:nrow(density1b_means), exp(density1b_means[,2]), exp(density1b_means[,3]), exp(density1b_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "")
+points(1:nrow(density1b_means),exp(density1b_means[,2]),col="black",bg="white",pch=19,cex=1)
+axis(1, at=1:nrow(density1b_means), labels = labs, las = 2)
 mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
 dev.off()
+
+
+
 
 ###########################################################
 ## HABITAT COMPARISONS
