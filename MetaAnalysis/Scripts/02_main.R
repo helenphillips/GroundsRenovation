@@ -376,3 +376,4 @@ habitat_areas$SpeciesDensity_Current <- calculate_density_cSAR(S=habitat_areas$S
 habitat_areas$SpeciesDensity_Proposed <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, x=0.1, newA=habitat_areas$Proposed_area_m2)
 
 habitat_areas[21, 2:6] <- colSums(habitat_areas[,2:6], na.rm = TRUE)
+write.csv(habitat_areas, file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Table/Habitat_totals.csv", row.names = FALSE)
