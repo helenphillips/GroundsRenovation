@@ -66,7 +66,7 @@ png(file.path(figure_out, "Map.png"), pointsize=11)
 par(mar=c(0, 0, 0, 0))
 map('worldHires', c("UK"),border=0,fill=TRUE, col="forestgreen",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
 points(dsSPDF, col="black", bg="black", cex= 1.5, pch=19)
-text(-7, 49.5, "Figure 1 \nMap of the study locations", pos=4)
+text(-7, 49.5, "Figure 1 \nMap of study locations", pos=4)
 dev.off()
 
 
@@ -355,8 +355,24 @@ dev.off()
 
 
 habitat_areas <- data.frame(
-Habitat = c("Broadleaved woodland", "Acid grassland (heath)", "Chalk grassland", "Neutral grassland", "Fen (incl. reedbed)", "Marginal vegetation", "Ponds", "Green roof", "Species-poor hedgerow", "Species-rich hedgerow", "Mulch", "Short/perennial vegetation", "Amenisty grass/turf", "Introduced shrubs", "Hard standing", "Fern and cycad planting", "Agricultural plants", "Paleogene Asteraceae", "Neogene grass", "Cretaceous Angiosperm shrubs"),
-Current_area_m2 = c(1978, 100, 425, 2050, 75, 190, 339, 9, 109, 77, 170, 373.9, 3657, 2000, 9506, 0, 0, 0, 0, 0),
-Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 0, 736, 518, 1049, 9076, 760, 570, 177, 157, 245)
+Habitat = c("Broadleaved woodland", "Acid grassland (heath)", "Chalk grassland", "Neutral grassland", "Fen (incl. reedbed)", "Marginal vegetation (pond edge)", "Ponds", "Green roof", "Species-poor hedgerow", "Species-rich hedgerow", "Mulch", "Short/perennial vegetation", "Amenity grass/turf", "Introduced shrubs", "Hard standing", "Fern and cycad planting", "Agricultural plants", "Paleogene Asteraceae", "Neogene grass", "Cretaceous Angiosperm shrubs", "Total"),
+Current_area_m2 = c(1978, 100, 425, 2050, 75, 190, 339, 9, 109, 77, 170, 373.9, 3657, 2000, 9506, 0, 0, 0, 0, 0, NA),
+Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 0, 736, 518, 1049, 9076, 760, 570, 177, 157, 245, NA)
 )
 
+habitat_areas$Habitat <- tolower(habitat_areas$Habitat)
+
+tolower(density3_means$Habitat) %in% habitat_areas$Habitat
+# Check this everytime
+
+habitat_areas <- merge(habitat_areas, density3_means, by.x = "Habitat", by.y = "Habitat", all.x = TRUE)[,1:4]
+
+names(habitat_areas)[4] <- "SpeciesDensity_10m2"
+habitat_areas$SpeciesDensity_10m2 <- exp(habitat_areas$SpeciesDensity_10m2)
+
+## Calculating the biodiversity change between the two
+habitat_areas$SpeciesDensity_Current <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, x=0.1, newA=habitat_areas$Current_area_m2)
+
+habitat_areas$SpeciesDensity_Proposed <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, x=0.1, newA=habitat_areas$Proposed_area_m2)
+
+habitat_areas[21, 2:6] <- colSums(habitat_areas[,2:6], na.rm = TRUE)
