@@ -306,7 +306,7 @@ habitat <- garden[garden$Habitat %in% wanted_habs,]
 studies <- as.data.frame(aggregate(habitat$Habitat, list(habitat$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
 studies <- studies[studies$x > 1,]
 habitat <- habitat[habitat$Study.ID %in% studies$Group.1,] ## 185 rows
-habitat <- habitat[!(habitat$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2")),] # 164 rows
+habitat <- habitat[!(habitat$Study.ID %in% c("2006_SmithA 1", "2006_SmithA 2", "2003_Thompson 1")),] # 164 rows
 
 habitat <- habitat[complete.cases(habitat$Taxon.Richness),] ## 138
 table(habitat$Taxonimic.Level)
@@ -320,7 +320,7 @@ table(habitat$Habitat)
 too_Few <- c("ferns and cycad planting", "hard standing", "orchard", "species-poor hedgerow")
 habitat <- droplevels(habitat[!(habitat$Habitat %in% too_Few),])
 table(habitat$Habitat, habitat$Study.ID)
-too_Few_studies <- c("1982_Lawton 1", "2003_Thompson 1") ## Thompson is a BAD study ... incredibly high species richness
+too_Few_studies <- c("1982_Lawton 1") ## Thompson is a BAD study ... incredibly high species richness
 habitat <- droplevels(habitat[!(habitat$Study.ID %in% too_Few_studies),]) ## 131
 table(habitat$Habitat)
 #################
@@ -331,7 +331,6 @@ taxa <- habitat$Taxa
 taxa <- ifelse(taxa != "Plants", "Inverts", "Plants")
 
 Richness <- round(habitat$Taxon.Richness)
-correctedRichness <- round(habitat$Corrected_Taxon.Richness)
 habitat1 <- glmer(Richness ~ Habitat + (1|Study.ID) + (1|Taxa), family = poisson, data = habitat)
 summary(habitat1) 
 
@@ -339,8 +338,8 @@ habitat1_means <- model_Means(habitat1)
 
 png(file.path(figure_out, "Habitat_means.png"), pointsize=11)
 labs <- levels(habitat$Habitat)
-par(mar=c(10, 4, 1, 1))
-errbar(1:nrow(habitat1_means), exp(habitat1_means[,2]), exp(habitat1_means[,3]), exp(habitat1_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,70), las = 1, cex= 1, ylab = "")
+par(mar=c(14, 4, 1, 1))
+errbar(1:nrow(habitat1_means), exp(habitat1_means[,2]), exp(habitat1_means[,3]), exp(habitat1_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "")
 points(1:nrow(habitat1_means),exp(habitat1_means[,2]),col="black",bg="white",pch=19,cex=1)
 axis(1, at=1:nrow(habitat1_means), labels = labs, las = 2)
 mtext("Species Richness", side = 2, line = 2)
