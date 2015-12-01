@@ -222,22 +222,24 @@ dev.off()
 ## Data
 #########
 sampled_area <- garden[garden$SpeciesDensity == TRUE,] ## 371
-sampled_area <- sampled_area[sampled_area$Taxonimic.Level == "Species",] ## 350
+sampled_area <- sampled_area[sampled_area$Taxonimic.Level == "Species",] ## 367
 sampled_area <- droplevels(sampled_area)
+sampled_area <- sampled_area[complete.cases(sampled_area$Taxon.Richness),]## 345
 
 table(sampled_area$Habitat, sampled_area$Study.ID)
 table(sampled_area$Habitat)
 
-not_enough <- c("green roof", "Not present in NHM", "species-poor hedgerow", "Unsure/Not Clear", "Unspecified grass/meadows", "orchard", "ferns and cycad plantings", "fen (incl. reedbed)", "hard standing")
+not_enough <- c("green roof", "Not present in NHM", "species-poor hedgerow", "Unsure/Not Clear", "Unspecified grass/meadows", "orchard", "ferns and cycad plantings", "hard standing")
 
-sampled_area <- sampled_area[!(sampled_area$Habitat %in% not_enough),] ## 323
+sampled_area <- sampled_area[!(sampled_area$Habitat %in% not_enough),] ## 327
 
 sample_studies <- as.data.frame(aggregate(sampled_area$Habitat, list(sampled_area$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
 sample_studies <- sample_studies[sample_studies$x > 1,]
 ## The studies with only one habitat in are amenity grasslands (pretty much), so not losing anything by removing
 
-sampled_area <- sampled_area[sampled_area$Study.ID %in% sample_studies$Group.1,] ## 172
+sampled_area <- sampled_area[sampled_area$Study.ID %in% sample_studies$Group.1,] ## 182
 sampled_area <- droplevels(sampled_area)
+
 table(sampled_area$Habitat)
 
 tapply(sampled_area$Corrected_Taxon.Richness, sampled_area$Habitat, summary)
@@ -247,9 +249,10 @@ table(sampled_area$Study.ID, sampled_area$Habitat)
 table(sampled_area$Study.ID, sampled_area$Taxa)
 
 exclude_these_studies <- c("2003_Thompson 1", "2006_SmithA 1", "2006_SmithA 2")
-sampled_area <- sampled_area[!(sampled_area$Study.ID %in% exclude_these_studies),] # 127
-sampled_area <- droplevels(sampled_area) # 122
+sampled_area <- sampled_area[!(sampled_area$Study.ID %in% exclude_these_studies),] # 134
+sampled_area <- droplevels(sampled_area) 
 
+sampled_area$Habitat <- relevel(sampled_area$Habitat, ref = "broadleaved woodland")
 
 #########
 ## Model
@@ -263,7 +266,7 @@ density1 <- glmer(density ~ Habitat * taxa + (1|Study.ID), data = sampled_area, 
 density2 <- glmer(density ~ Habitat + taxa + (1|Study.ID), data = sampled_area, family = poisson)
 anova(density1, density2)
 density3 <- glmer(density ~ Habitat + (1|Study.ID), data = sampled_area, family = poisson)
-
+anova(density2, density3)
 summary(density3)
 model_plot(density3) ## That's ok
 
