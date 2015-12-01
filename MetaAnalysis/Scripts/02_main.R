@@ -360,6 +360,13 @@ introduced_shrubs_coef <- introduced_shrubs/trees
 
 angiosperm_shrubs <- shrubs$Species.Richness[shrubs$Host == "Shrubs" & shrubs$Status == "Middle"]
 angiosperm_shrubs_coef <- angiosperm_shrubs/trees
+
+
+
+scriven <- garden[garden$Study.ID == "2013_Scriven 1",]
+species_poor_hedge <- scriven$Taxon.Richness[scriven$Habitat == "species-poor hedgerow"]
+species_rich_hedge <- scriven$Taxon.Richness[scriven$Habitat == "species-rich hedgerow"]
+species_poor_hedge_coef <- species_poor_hedge/species_rich_hedge
 #############################################
 ### BIODIVERSITY CHANGE
 #############################################
@@ -367,16 +374,16 @@ angiosperm_shrubs_coef <- angiosperm_shrubs/trees
 
 
 habitat_areas <- data.frame(
-Habitat = c("Broadleaved woodland", "Acid grassland (heath)", "Chalk grassland", "Neutral grassland", "Fen (incl. reedbed)", "Marginal vegetation (pond edge)", "Ponds", "Green roof", "Species-poor hedgerow", "Species-rich hedgerow", "Mulch", "Short/perennial vegetation", "Amenity grass/turf", "Introduced shrubs", "Hard standing", "Fern and cycad planting", "Agricultural plants", "Paleogene Asteraceae", "Neogene grass", "Cretaceous Angiosperm shrubs", "Total"),
-Current_area_m2 = c(1978, 100, 425, 2050, 75, 190, 339, 9, 109, 77, 170, 373.9, 3657, 2000, 9506, 0, 0, 0, 0, 0, NA),
-Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 0, 736, 518, 1049, 9076, 760, 570, 177, 157, 245, NA)
+Habitat = c("Broadleaved woodland", "Acid grassland (heath)", "Chalk grassland", "Neutral grassland", "Fen (incl. reedbed)", "Marginal vegetation (pond edge)", "Ponds", "Green roof", "Species-poor hedgerow", "Species-rich hedgerow", "Short/perennial vegetation", "Amenity grass/turf", "Introduced shrubs", "Hard standing", "Fern and cycad planting", "Agricultural plants", "Paleogene Asteraceae", "Neogene grass", "Cretaceous Angiosperm shrubs", "Total"),
+Current_area_m2 = c(1978, 100, 425, 2050, 75, 190, 339, 9, 109, 77, 373.9, 3657, 2000, 9506, 0, 0, 0, 0, 0, NA),
+Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 736, 518, 1049, 9076, 760, 570, 177, 157, 245, NA)
 )
 
 habitat_areas$Habitat <- tolower(habitat_areas$Habitat)
 
 tolower(density3_means$Habitat) %in% habitat_areas$Habitat
 # Check this everytime
-
+density3_means$Habitat <- tolower(density3_means$Habitat)
 habitat_areas <- merge(habitat_areas, density3_means, by.x = "Habitat", by.y = "Habitat", all.x = TRUE)[,1:4]
 
 names(habitat_areas)[4] <- "SpeciesDensity_10m2"
@@ -387,6 +394,8 @@ habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "introduced shrubs"] 
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "fern and cycad planting"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
 
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * angiosperm_shrubs_coef
+
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-poor hedgerow"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
 
 
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "neogene grass"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "amenity grass/turf"]
