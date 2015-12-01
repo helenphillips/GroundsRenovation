@@ -45,10 +45,10 @@ dev.off()
 ## Study info 
 #################
 
-length(unique(garden$Study.ID)) ## 31
+length(unique(garden$Study.ID)) ## 33
 
 sources <- gsub("\\ [0-9]$", "", garden$Study.ID)
-length(unique(sources)) ## 22
+length(unique(sources)) ## 24
 
 
 
@@ -221,7 +221,7 @@ dev.off()
 #########
 ## Data
 #########
-sampled_area <- garden[garden$SpeciesDensity == TRUE,] ## 354
+sampled_area <- garden[garden$SpeciesDensity == TRUE,] ## 371
 sampled_area <- sampled_area[sampled_area$Taxonimic.Level == "Species",] ## 350
 sampled_area <- droplevels(sampled_area)
 
@@ -346,10 +346,17 @@ mtext("Species Richness", side = 2, line = 2)
 dev.off()
 
 
+#############################################
+### Other habitats
+#############################################
 
+shrubs <- read.csv("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Papers/1979_Strong/Data.csv")
+trees <- shrubs$Species.Richness[shrubs$Host == "Trees" & shrubs$Status == "Middle"]
+introduced_shrubs <- shrubs$Species.Richness[shrubs$Host == "Shrubs" & shrubs$Status == "Introduced"]
+introduced_shrubs_coef <- introduced_shrubs/trees
 
-
-
+angiosperm_shrubs <- shrubs$Species.Richness[shrubs$Host == "Shrubs" & shrubs$Status == "Middle"]
+angiosperm_shrubs_coef <- angiosperm_shrubs/trees
 #############################################
 ### BIODIVERSITY CHANGE
 #############################################
@@ -371,6 +378,17 @@ habitat_areas <- merge(habitat_areas, density3_means, by.x = "Habitat", by.y = "
 
 names(habitat_areas)[4] <- "SpeciesDensity_10m2"
 habitat_areas$SpeciesDensity_10m2 <- exp(habitat_areas$SpeciesDensity_10m2)
+
+## Adding in other coefficients
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "introduced shrubs"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "fern and cycad planting"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
+
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * angiosperm_shrubs_coef
+
+
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "neogene grass"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "amenity grass/turf"]
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
+
 
 ## Calculating the biodiversity change between the two
 habitat_areas$SpeciesDensity_Current <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, x=0.1, newA=habitat_areas$Current_area_m2)
