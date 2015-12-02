@@ -401,11 +401,33 @@ habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-poor hedgero
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "neogene grass"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "amenity grass/turf"]
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
 
+## Creating c and z values
+
+
 
 ## Calculating the biodiversity change between the two
-habitat_areas$SpeciesDensity_Current <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, x=0.1, newA=habitat_areas$Current_area_m2)
+habitat_areas$Corrected_SpeciesDensity_Current <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, x=0.1, newA=habitat_areas$Current_area_m2)
+habitat_areas$Corrected_SpeciesDensity_Proposed <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, x=0.1, newA=habitat_areas$Proposed_area_m2)
 
-habitat_areas$SpeciesDensity_Proposed <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, x=0.1, newA=habitat_areas$Proposed_area_m2)
 
-habitat_areas[21, 2:6] <- colSums(habitat_areas[,2:6], na.rm = TRUE)
+### Area weights
+
+totalCurrent <- sum(habitat_areas$Current_area_m2, na.rm = TRUE)
+totalProposed <- sum(habitat_areas$Proposed_area_m2, na.rm = TRUE)
+
+habitat_areas$Current_weight <- habitat_areas$Current_area_m2/totalCurrent
+habitat_areas$Current_Weighted_density <- habitat_areas$SpeciesDensity_10m2 * habitat_areas$Current_weight
+habitat_areas$Current_Weighted_Correcteddensity <- habitat_areas$Corrected_SpeciesDensity_Current * habitat_areas$Current_weight
+
+habitat_areas$Proposed_weight <- habitat_areas$Proposed_area_m2/totalProposed
+habitat_areas$Proposed_Weighted_density <- habitat_areas$SpeciesDensity_10m2 * habitat_areas$Proposed_weight
+habitat_areas$Proposed_Weighted_Correcteddensity <- habitat_areas$Corrected_SpeciesDensity_Proposed * habitat_areas$Proposed_weight
+
+## Totals
+habitat_areas[20, 2:ncol(habitat_areas)] <- colSums(habitat_areas[,2:ncol(habitat_areas)], na.rm = TRUE)
+
+habitat_areas$SpeciesDensity_10m2[20] <- NA
+habitat_areas$Corrected_SpeciesDensity_Current[20] <- NA
+habitat_areas$Corrected_SpeciesDensity_Proposed[20] <- NA
+
 write.csv(habitat_areas, file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Table/Habitat_totals.csv", row.names = FALSE)
