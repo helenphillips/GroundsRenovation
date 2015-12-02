@@ -402,7 +402,9 @@ habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "neogene grass"] <- h
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
 
 ## Creating c and z values
-
+habitat_areas$z <- 0.1
+habitat_areas$c <- log(habitat_areas$SpeciesDensity_10m2)/(log(10+1)^0.1)
+habitat_areas$DensityCorrectionFormula <- "exp(c*log(Area)^z)"
 
 
 ## Calculating the biodiversity change between the two
@@ -424,10 +426,7 @@ habitat_areas$Proposed_Weighted_density <- habitat_areas$SpeciesDensity_10m2 * h
 habitat_areas$Proposed_Weighted_Correcteddensity <- habitat_areas$Corrected_SpeciesDensity_Proposed * habitat_areas$Proposed_weight
 
 ## Totals
-habitat_areas[20, 2:ncol(habitat_areas)] <- colSums(habitat_areas[,2:ncol(habitat_areas)], na.rm = TRUE)
-
-habitat_areas$SpeciesDensity_10m2[20] <- NA
-habitat_areas$Corrected_SpeciesDensity_Current[20] <- NA
-habitat_areas$Corrected_SpeciesDensity_Proposed[20] <- NA
+habitat_areas[20,] <- NA
+habitat_areas[20, c(2:3, 10:15)] <- colSums(habitat_areas[,c(2:3, 10:15)], na.rm = TRUE)
 
 write.csv(habitat_areas, file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Table/Habitat_totals.csv", row.names = FALSE)
