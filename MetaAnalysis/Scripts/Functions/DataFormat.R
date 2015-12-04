@@ -4,7 +4,7 @@ convertArea <- function(column, column_units, type = c("sample", "habitat")){
 	if(type == 'habitat'){
 		cat("Converting habitat area to m2...\n")
 		new_areas <- ifelse(column_units == "ha", new_areas* 10000, new_areas)
-		cat("Currently only converts m2...stop being lazy and write more code \n")
+		# cat("Currently only converts m2...stop being lazy and write more code \n")
 		}
 	
 	if(type == "sample"){
