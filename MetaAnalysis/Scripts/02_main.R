@@ -1,11 +1,19 @@
+###### 1. Change working directory to "MetaAnalysis" folder
+
+setwd()
+
+## In column headings:
+## "Current" always refers to estimates of the grounds as they are now
+## "Proposed"refer to grounds estimates after renovation
+## "Corrected" densities estimates are when the species density estimate has accounted for the area of the habitat
+
 #################
 ## Functions
 #################
-source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R")
-source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/CheckComparisons.R")
-source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/DataFormat.R")
-source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/ModelFunctions.R")
-source("~/Dropbox/AdriannasFunctions/model_plot.R")
+source("Scripts/Functions/GoogleSpreadsheets.R")
+source("Scripts/Functions/CheckComparisons.R")
+source("Scripts/Functions/DataFormat.R")
+source("Scripts/Functions/ModelFunctions.R")
 
 #################
 ## Libraries
@@ -25,7 +33,7 @@ library(effect)
 ## Locations
 #################
 
-figure_out <- "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Figures"
+figure_out <- "Scripts/Figures"
 
 #################
 ## Data
@@ -35,39 +43,34 @@ garden <- OpenGS()
 
 
 ################################
-
-comparisons <- check_comparisons(garden)
-pdf(file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Figures/HabitatComparisons.pdf")
-comparisons[[2]]
-dev.off()
-
+# comparisons <- check_comparisons(garden)
+# pdf(file = "Scripts/Figures/HabitatComparisons.pdf")
+# comparisons[[2]]
+# dev.off()
 #################
 ## Study info 
 #################
-
-length(unique(garden$Study.ID)) ## 33
-
-sources <- gsub("\\ [0-9]$", "", garden$Study.ID)
-length(unique(sources)) ## 24
-
+# length(unique(garden$Study.ID)) ## 33
+# sources <- gsub("\\ [0-9]$", "", garden$Study.ID)
+# length(unique(sources)) ## 24
 
 
 #################
 ## MAP
 #################
-coord<-aggregate(cbind(garden$long, garden$lat), list(garden$Study.ID), max)
-coord$X<-coord$Group.1
-coord<-coord[2:4]
-names(coord)<-c("Long", "Lat", "X")
-dsSPDF<-SpatialPointsDataFrame(coord[,1:2], data.frame(coord[,1:3]))
-proj4string(dsSPDF)<-CRS("+proj=longlat")
+# coord<-aggregate(cbind(garden$long, garden$lat), list(garden$Study.ID), max)
+# coord$X<-coord$Group.1
+# coord<-coord[2:4]
+# names(coord)<-c("Long", "Lat", "X")
+# dsSPDF<-SpatialPointsDataFrame(coord[,1:2], data.frame(coord[,1:3]))
+# proj4string(dsSPDF)<-CRS("+proj=longlat")
 
-png(file.path(figure_out, "Map.png"), pointsize=11)
-	par(mar=c(0, 0, 0, 0))
-	map('worldHires', c("UK"),border=0,fill=TRUE, col="forestgreen",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
-	points(dsSPDF, col="black", bg="black", cex= 1.5, pch=19)
-	text(-7, 49.5, "Figure 1 \nMap of study locations", pos=4)
-dev.off()
+# png(file.path(figure_out, "Map.png"), pointsize=11)
+	# par(mar=c(0, 0, 0, 0))
+	# map('worldHires', c("UK"),border=0,fill=TRUE, col="forestgreen",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
+	# points(dsSPDF, col="black", bg="black", cex= 1.5, pch=19)
+	# text(-7, 49.5, "Figure 1 \nMap of study locations", pos=4)
+# dev.off()
 
 
 #################
@@ -87,9 +90,7 @@ garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), gar
 garden$SpeciesDensity <- ifelse(is.na(garden$Sampled.Area_metres), FALSE, TRUE)
 
 ## Calculate a species density for when an entire area has been sampled.
-## As species density varies within fragment area
 garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Habitat.Area_metres, z=0.1, newA=10), garden$Corrected_Taxon.Richness)
-
 garden$SpeciesDensity <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), TRUE, garden$SpeciesDensity)
 
 
@@ -100,7 +101,6 @@ garden$SpeciesDensity <- ifelse(garden$Sampled.Area.Units %in% not_areas, FALSE,
 
 
 hist(garden$Corrected_Taxon.Richness)
-garden$Study.ID[garden$Corrected_Taxon.Richness > 100] ## Because its cubic metres...
 
 ###########################################################
 ## SAMPLING AREA COMPARISONS
@@ -148,7 +148,7 @@ levels(taxa)[levels(taxa) != "Plants"] <- "Inverts"
 table(sampled_area$Habitat, taxa)
 density <- round(sampled_area$Corrected_Taxon.Richness)
 
-## Not convinved there is enough data for this model yet
+## Not convinced there is enough data for this model yet
 # density1 <- glmer(density ~ Habitat * taxa + (1|Study.ID), data = sampled_area, family = poisson) 
 
 density2 <- glmer(density ~ Habitat + taxa + (1|Study.ID), data = sampled_area, family = poisson)
@@ -174,7 +174,7 @@ dev.off()
 ### Other habitats
 #############################################
 
-shrubs <- read.csv("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Papers/1979_Strong/Data.csv")
+shrubs <- read.csv("Papers/1979_Strong/Data.csv")
 trees <- shrubs$Species.Richness[shrubs$Host == "Trees" & shrubs$Status == "Middle"]
 introduced_shrubs <- shrubs$Species.Richness[shrubs$Host == "Shrubs" & shrubs$Status == "Middle"]
 introduced_shrubs_coef <- introduced_shrubs/trees
@@ -210,21 +210,23 @@ habitat_areas$SpeciesDensity_10m2 <- exp(habitat_areas$SpeciesDensity_10m2)
 ## Adding in other coefficients
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "introduced shrubs"] <- 
 		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
+		
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "fern and cycad planting"] <- 
 		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
+		
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- 
 		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * angiosperm_shrubs_coef
+		
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-poor hedgerow"] <- 
 		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
+		
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "neogene grass"] <- 
 		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "amenity grass/turf"]
+		
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "paleogene asteraceae"] <- 
 		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "short/perennial vegetation"]
+		
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
-
-## Creating z values
-habitat_areas$z <- 0.1
-habitat_areas$DensityCorrectionFormula <- "exp(c*log(Area)^z)"
 
 
 ## Calculating the biodiversity change between the two
@@ -248,7 +250,7 @@ habitat_areas$Proposed_Weighted_Correcteddensity <- habitat_areas$Corrected_Spec
 ## Totals
 habitat_areas[20, c(2: 12)] <- colSums(habitat_areas[,c(2:12)], na.rm = TRUE)
 
-write.csv(habitat_areas, file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Table/Habitat_totals.csv", row.names = FALSE)
+write.csv(habitat_areas, file = "Scripts/Table/Habitat_totals.csv", row.names = FALSE)
 
 
 #############################################
