@@ -56,6 +56,6 @@ OpenGS <- function(){
 		
 	garden <- prepareGS(garden)
 
-	write.csv(garden, file = paste("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Data/Data_extract_", Sys.Date(), ".csv", sep=""), row.names = FALSE)
+	write.csv(garden, file = paste("Data/Data_extract_", Sys.Date(), ".csv", sep=""), row.names = FALSE)
 	return(garden)
 }
