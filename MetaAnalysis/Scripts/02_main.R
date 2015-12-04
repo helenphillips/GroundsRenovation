@@ -228,8 +228,6 @@ habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
 
 ## Creating z values
 habitat_areas$z <- 0.1
-habitat_areas$c <- log(habitat_areas$SpeciesDensity_10m2)/(log(10+1)^0.1)
-habitat_areas$c[habitat_areas$Habitat == "hard standing"] <- NA
 habitat_areas$DensityCorrectionFormula <- "exp(c*log(Area)^z)"
 
 
@@ -259,18 +257,19 @@ write.csv(habitat_areas, file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis
 
 
 #############################################
-### BIODIVERSITY CHANGE
+### PLOTS WITHH ALL COEFFICIENTS
 #############################################
 png(file.path(figure_out, "Habitat_density_plusmissing.png"), pointsize=11)
-missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing", "introduced shrubs", "neogene grass", "paleogene asteraceae", "species-poor hedgerow")
-labs <- levels(sampled_area$Habitat)
-labs2 <- c(labs, missing_coefs)
-par(mar=c(14, 4, 1, 1))
-errbar(1:nrow(density3_means), exp(density3_means[,2]), exp(density3_means[,3]), exp(density3_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
-points(1:nrow(density3_means),exp(density3_means[,2]),col="black",bg="white",pch=19,cex=1)
-
-missing_densities <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat %in% missing_coefs]
-points((nrow(density3_means)+1):(length(labs2)), missing_densities, col="red", pch=19)
-axis(1, at=1:length(labs2), labels = labs2, las = 2)
-mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
+	missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing", 
+		"introduced shrubs", "neogene grass", "paleogene asteraceae", "species-poor hedgerow")
+	labs <- levels(sampled_area$Habitat)
+	labs2 <- c(labs, missing_coefs)
+	par(mar=c(14, 4, 1, 1))
+	errbar(1:nrow(density3_means), exp(density3_means[,2]), exp(density3_means[,3]), exp(density3_means[,4]), 
+		col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
+	points(1:nrow(density3_means),exp(density3_means[,2]),col="black",bg="white",pch=19,cex=1)
+	missing_densities <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat %in% missing_coefs]
+	points((nrow(density3_means)+1):(length(labs2)), missing_densities, col="red", pch=19)
+	axis(1, at=1:length(labs2), labels = labs2, las = 2)
+	mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
 dev.off()
