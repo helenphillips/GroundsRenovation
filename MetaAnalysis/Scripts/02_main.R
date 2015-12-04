@@ -153,7 +153,6 @@ density <- round(sampled_area$Corrected_Taxon.Richness)
 
 density1 <- glmer(density ~ Habitat * taxa + (1|Study.ID), data = sampled_area, family = poisson) ## Not convinved there is enough data for this model yet
 density2 <- glmer(density ~ Habitat + taxa + (1|Study.ID), data = sampled_area, family = poisson)
-anova(density1, density2)
 density3 <- glmer(density ~ Habitat + (1|Study.ID), data = sampled_area, family = poisson)
 anova(density2, density3)
 summary(density3)
@@ -161,19 +160,6 @@ model_plot(density3) ## That's ok
 
 
 
-# ##### INTERACTION PLOT ######
-# habTaxa <- as.factor(paste(sampled_area$Habitat, taxa))
-# density1b <- glmer(density ~ habTaxa + (1|Study.ID), data = sampled_area, family = poisson)
-# density1b_means <- model_Means(density1b)
-# png(file.path(figure_out, "Habitat_density.png"), pointsize=11)
-# labs <- levels(habTaxa)
-# par(mar=c(14, 4, 1, 1))
-# errbar(1:nrow(density1b_means), exp(density1b_means[,2]), exp(density1b_means[,3]), exp(density1b_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "")
-# points(1:nrow(density1b_means),exp(density1b_means[,2]),col="black",bg="white",pch=19,cex=1)
-# axis(1, at=1:nrow(density1b_means), labels = labs, las = 2)
-# mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
-# dev.off()
-##################
 
 density3_means <- model_Means(density3)
 png(file.path(figure_out, "Habitat_density.png"), pointsize=11)
@@ -194,7 +180,6 @@ shrubs <- read.csv("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Papers/1979_
 trees <- shrubs$Species.Richness[shrubs$Host == "Trees" & shrubs$Status == "Middle"]
 introduced_shrubs <- shrubs$Species.Richness[shrubs$Host == "Shrubs" & shrubs$Status == "Middle"]
 introduced_shrubs_coef <- introduced_shrubs/trees
-
 angiosperm_shrubs <- shrubs$Species.Richness[shrubs$Host == "Shrubs" & shrubs$Status == "Middle"]
 angiosperm_shrubs_coef <- angiosperm_shrubs/trees
 
