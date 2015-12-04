@@ -355,13 +355,11 @@ dev.off()
 
 shrubs <- read.csv("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Papers/1979_Strong/Data.csv")
 trees <- shrubs$Species.Richness[shrubs$Host == "Trees" & shrubs$Status == "Middle"]
-introduced_shrubs <- shrubs$Species.Richness[shrubs$Host == "Shrubs" & shrubs$Status == "Introduced"]
+introduced_shrubs <- shrubs$Species.Richness[shrubs$Host == "Shrubs" & shrubs$Status == "Middle"]
 introduced_shrubs_coef <- introduced_shrubs/trees
 
 angiosperm_shrubs <- shrubs$Species.Richness[shrubs$Host == "Shrubs" & shrubs$Status == "Middle"]
 angiosperm_shrubs_coef <- angiosperm_shrubs/trees
-
-
 
 scriven <- garden[garden$Study.ID == "2013_Scriven 1",]
 species_poor_hedge <- scriven$Taxon.Richness[scriven$Habitat == "species-poor hedgerow"]
@@ -392,18 +390,16 @@ habitat_areas$SpeciesDensity_10m2 <- exp(habitat_areas$SpeciesDensity_10m2)
 ## Adding in other coefficients
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "introduced shrubs"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "fern and cycad planting"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
-
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * angiosperm_shrubs_coef
-
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-poor hedgerow"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
-
-
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "neogene grass"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "amenity grass/turf"]
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "paleogene asteraceae"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "short/perennial vegetation"]
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
 
 ## Creating c and z values
 habitat_areas$z <- 0.1
 habitat_areas$c <- log(habitat_areas$SpeciesDensity_10m2)/(log(10+1)^0.1)
+habitat_areas$c[habitat_areas$Habitat == "hard standing"] <- NA
 habitat_areas$DensityCorrectionFormula <- "exp(c*log(Area)^z)"
 
 
@@ -426,7 +422,25 @@ habitat_areas$Proposed_Weighted_density <- habitat_areas$SpeciesDensity_10m2 * h
 habitat_areas$Proposed_Weighted_Correcteddensity <- habitat_areas$Corrected_SpeciesDensity_Proposed * habitat_areas$Proposed_weight
 
 ## Totals
-habitat_areas[20,] <- NA
+habitat_areas[20,2:ncol(habitat_areas)] <- NA
 habitat_areas[20, c(2:3, 10:15)] <- colSums(habitat_areas[,c(2:3, 10:15)], na.rm = TRUE)
 
 write.csv(habitat_areas, file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Table/Habitat_totals.csv", row.names = FALSE)
+
+
+#############################################
+### BIODIVERSITY CHANGE
+#############################################
+png(file.path(figure_out, "Habitat_density_plusmissing.png"), pointsize=11)
+missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing", "introduced shrubs", "neogene grass", "paleogene asteraceae", "species-poor hedgerow")
+labs <- levels(sampled_area$Habitat)
+labs2 <- c(labs, missing_coefs)
+par(mar=c(14, 4, 1, 1))
+errbar(1:nrow(density3_means), exp(density3_means[,2]), exp(density3_means[,3]), exp(density3_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
+points(1:nrow(density3_means),exp(density3_means[,2]),col="black",bg="white",pch=19,cex=1)
+
+missing_densities <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat %in% missing_coefs]
+points((nrow(density3_means)+1):(length(labs2)), missing_densities, col="red", pch=19)
+axis(1, at=1:length(labs2), labels = labs2, las = 2)
+mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
+dev.off()
