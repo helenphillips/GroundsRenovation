@@ -63,10 +63,10 @@ dsSPDF<-SpatialPointsDataFrame(coord[,1:2], data.frame(coord[,1:3]))
 proj4string(dsSPDF)<-CRS("+proj=longlat")
 
 png(file.path(figure_out, "Map.png"), pointsize=11)
-par(mar=c(0, 0, 0, 0))
-map('worldHires', c("UK"),border=0,fill=TRUE, col="forestgreen",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
-points(dsSPDF, col="black", bg="black", cex= 1.5, pch=19)
-text(-7, 49.5, "Figure 1 \nMap of study locations", pos=4)
+	par(mar=c(0, 0, 0, 0))
+	map('worldHires', c("UK"),border=0,fill=TRUE, col="forestgreen",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
+	points(dsSPDF, col="black", bg="black", cex= 1.5, pch=19)
+	text(-7, 49.5, "Figure 1 \nMap of study locations", pos=4)
 dev.off()
 
 
@@ -74,9 +74,8 @@ dev.off()
 ## Data Exploration
 #################
 
-## Converting to consistent sampling area units
+## Converting to consistent units
 garden$Sampled.Area_metres <- convertArea(garden$Sampled.Area, garden$Sampled.Area.Units, "sample")
-## Converting to consistent habitat area units
 garden$Habitat.Area_metres <- convertArea(garden$Habitat.Area, garden$Habitat.Area.Units, "habitat")
 
 
@@ -84,8 +83,8 @@ garden$Habitat.Area_metres <- convertArea(garden$Habitat.Area, garden$Habitat.Ar
 garden$SpeciesDensity <- FALSE
 
 # When we know sampling area, coverting to species density per 10m2, and changing the "Flag"
-garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, calculate_density_cSAR()) ## 
-garden$SpeciesDensity <- ifelse(!(is.na(garden$Sampled.Area_metres)), TRUE, FALSE)
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, z=0.1, newA = 10)) ## 
+garden$SpeciesDensity <- ifelse(is.na(garden$Sampled.Area_metres), FALSE, TRUE)
 
 ## Calculate a species density for when an entire area has been sampled.
 ## As species density varies within fragment area
@@ -257,7 +256,7 @@ write.csv(habitat_areas, file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis
 
 
 #############################################
-### PLOTS WITHH ALL COEFFICIENTS
+### PLOTS WITH ALL COEFFICIENTS
 #############################################
 png(file.path(figure_out, "Habitat_density_plusmissing.png"), pointsize=11)
 	missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing", 

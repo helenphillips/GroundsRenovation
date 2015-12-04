@@ -17,9 +17,9 @@ convertArea <- function(column, column_units, type = c("sample", "habitat")){
 
 
 
-calculate_density_cSAR <- function(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, x=0.1, newA = 10){
-	log_c <- log(S)-(log(A)*x)
-	log_new_S <- log_c + x*log(newA)
+calculate_density_cSAR <- function(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, z=0.1, newA = 10){
+	log_c <- log(S)-(log(A)*z)
+	log_new_S <- log_c + z*log(newA)
 	new_S <- exp(log_new_S)
 	return(new_S)
 }
