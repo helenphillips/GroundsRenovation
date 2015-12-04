@@ -74,19 +74,23 @@ dev.off()
 ## Data Exploration
 #################
 
-## Correcting sampling area
+## Converting to consistent sampling area units
 garden$Sampled.Area_metres <- convertArea(garden$Sampled.Area, garden$Sampled.Area.Units, "sample")
-## Correcting habtiat area
+## Converting to consistent habitat area units
 garden$Habitat.Area_metres <- convertArea(garden$Habitat.Area, garden$Habitat.Area.Units, "habitat")
 
+
+# "Flag" column so we know what has been converted to a species denisty
 garden$SpeciesDensity <- FALSE
+
+# When we know sampling area, coverting to species density per 10m2, and changing the "Flag"
 garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, calculate_density_cSAR()) ## 
 garden$SpeciesDensity <- ifelse(!(is.na(garden$Sampled.Area_metres)), TRUE, FALSE)
 
 ## Calculate a species density for when an entire area has been sampled.
-## AS species density varies within fragment area
-## Want this when we have teh fragment area but no sampled area
-garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), calculate_density_iSAR(), garden$Corrected_Taxon.Richness)
+## As species density varies within fragment area
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Habitat.Area_metres, x=0.1, newA=10), garden$Corrected_Taxon.Richness)
+
 garden$SpeciesDensity <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), TRUE, garden$SpeciesDensity)
 
 
@@ -98,12 +102,6 @@ garden$SpeciesDensity <- ifelse(garden$Sampled.Area.Units %in% not_areas, FALSE,
 
 hist(garden$Corrected_Taxon.Richness)
 garden$Study.ID[garden$Corrected_Taxon.Richness > 100] ## Because its cubic metres...
-
-head(garden[garden$Study.ID == "2003_Thompson 1",]) ## Probably ok
-head(garden[garden$Study.ID == "2015_Smith 1",]) ## Family anyway
-head(garden[garden$Study.ID == "2006_SmithA 1",]) ## Tiny sampled area
-head(garden[garden$Study.ID == "2006_SmithA 2",]) ## 
-head(garden[garden$Study.ID == "2004_Helden 2",]) ## Probably ok
 
 ###########################################################
 ## HABITAT AREA COMPARISONS
