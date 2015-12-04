@@ -23,17 +23,3 @@ calculate_density_cSAR <- function(S=garden$Taxon.Richness, A=garden$Sampled.Are
 	new_S <- exp(log_new_S)
 	return(new_S)
 }
-
-
-
-calculate_density_iSAR <- function(S=garden$Taxon.Richness, A=garden$Habitat.Area_metres, x=0.1, z=0.25){
-	a <- log(10)
-	
-	c <- log(S)/log(A)^z
-	b <- c * log(A)^(z-x)
-	
-	samp_S <- b * a^x
-	samp_S <- exp(samp_S)
-
-	return(samp_S)
-	}
