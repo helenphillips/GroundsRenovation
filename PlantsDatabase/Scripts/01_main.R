@@ -6,7 +6,7 @@
 source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/RemoveDuplicates.R")
 source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesSimilarity.R")
 source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesOverTime.R")
-
+source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R")
 ##############
 ## libraries
 ##############
@@ -90,7 +90,22 @@ y.axis <- seq(1, length(new_plants), 1)
 Species_over_time(new_plants, x.axis, y.axis)
 
 
+#############################
+## Converting Codes to habitat types
+#############################
+## Using a previous extract for now
+ext <- read.csv("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Data/Data_extract_2015-12-03.csv")
+
+wlg <- droplevels(ext[ext$Study.ID == "PlantDatabaseExtract",])
+
+plants_habitat <- merge(plants, wlg, all.x=TRUE, by.x="Code", by.y = "Site.ID")[,c(1:10, 15)]
+
+plants_habitat <- plants_habitat[!(is.na(plants_habitat$Habitat.y)),]
+plants_habitat <- droplevels(plants_habitat[plants_habitat$Habitat.y != "Unsure/Not Clear",])
 
 
-
-
+new_plants_habitat <- remove_duplicates(plants_habitat, columns = "Habitat.y")
+similarity_habitat <- species_similarity(new_plants_habitat)
+png(file.path(figure_out, "HabitatTypeSimiarity.png"), height = 500, width = 500)
+levelplot(similarity_habitat, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "Percent of X in common with Y", xlab = "Percent of X in common with Y")
+dev.off()
