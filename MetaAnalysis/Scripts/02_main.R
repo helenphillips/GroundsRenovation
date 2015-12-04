@@ -163,12 +163,14 @@ model_plot(density3) ## That's ok
 
 density3_means <- model_Means(density3)
 png(file.path(figure_out, "Habitat_density.png"), pointsize=11)
-labs <- levels(sampled_area$Habitat)
-par(mar=c(14, 4, 1, 1))
-errbar(1:nrow(density3_means), exp(density3_means[,2]), exp(density3_means[,3]), exp(density3_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "")
-points(1:nrow(density3_means),exp(density3_means[,2]),col="black",bg="white",pch=19,cex=1)
-axis(1, at=1:nrow(density3_means), labels = labs, las = 2)
-mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
+	labs <- levels(sampled_area$Habitat)
+	par(mar=c(14, 4, 1, 1))
+	errbar(1:nrow(density3_means), exp(density3_means[,2]), exp(density3_means[,3]), 
+		exp(density3_means[,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", 
+		pch = 19, xaxt = "n", ylim=c(0,50), las = 1, cex= 1, ylab = "")
+	points(1:nrow(density3_means),exp(density3_means[,2]),col="black",bg="white",pch=19,cex=1)
+	axis(1, at=1:nrow(density3_means), labels = labs, las = 2)
+	mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
 dev.off()
 
 
@@ -210,15 +212,21 @@ names(habitat_areas)[4] <- "SpeciesDensity_10m2"
 habitat_areas$SpeciesDensity_10m2 <- exp(habitat_areas$SpeciesDensity_10m2)
 
 ## Adding in other coefficients
-habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "introduced shrubs"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
-habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "fern and cycad planting"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
-habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * angiosperm_shrubs_coef
-habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-poor hedgerow"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
-habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "neogene grass"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "amenity grass/turf"]
-habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "paleogene asteraceae"] <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "short/perennial vegetation"]
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "introduced shrubs"] <- 
+		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "fern and cycad planting"] <- 
+		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- 
+		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "broadleaved woodland"] * angiosperm_shrubs_coef
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-poor hedgerow"] <- 
+		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "neogene grass"] <- 
+		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "amenity grass/turf"]
+habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "paleogene asteraceae"] <- 
+		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "short/perennial vegetation"]
 habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
 
-## Creating c and z values
+## Creating z values
 habitat_areas$z <- 0.1
 habitat_areas$c <- log(habitat_areas$SpeciesDensity_10m2)/(log(10+1)^0.1)
 habitat_areas$c[habitat_areas$Habitat == "hard standing"] <- NA
