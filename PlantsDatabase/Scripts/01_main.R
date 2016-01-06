@@ -25,7 +25,8 @@ figure_out <- "~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Figures
 ##############
 ## DATA
 ##############
-
+garden <- OpenGS()
+nhm <- garden[garden$Study.ID == "PlantDatabaseExtract",]
 
 plants <- read.csv("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/DataFiles/PlantsByBed_NBN_Combined_2015-11-05-CMTR.csv")
 plants$X <- NULL
@@ -39,13 +40,17 @@ names(plants)[1:2] <- c("ID", "Habitat")
 levels(plants$Code)[levels(plants$Code) == "GR01"] <- "G01"
 levels(plants$Code)[levels(plants$Code) == "GR02"] <- "G02"
 
+### Adding in the NHM habitat classification
+plants <- merge(plants, nhm, by.x="Code", by.y="Site.ID")[,c(1:10,15)]
+
+
 ## Check how many are duplicates in each area
 l <- aggregate(plants$NBN.Name, list(plants$Code), function(x){length = length(x)})
 u <- aggregate(plants$NBN.Name, list(plants$Code), function(x){unique = length(unique(x))})
 areas <- cbind(l, u$x)
 
 
-new_plants <- remove_duplicates(plants, columns = "Habitat")
+new_plants <- remove_duplicates(plants, columns = "Habitat.x")
 
 
 ## Check that length of each habitat is expected
@@ -75,8 +80,13 @@ png(file.path(figure_out, "AreaSimiarity.png"), height = 1000, width = 1000)
 levelplot(similarity_area, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "", xlab = "")
 dev.off()
 
-
-
+wanted_habitats <- c("ponds", "neutral grassland","marginal vegetation (pond edge)","short/perennial vegetation", "fen (incl. reedbed)", "chalk grassland", "species-rich hedgerow", "acid grassland (heath)", "broadleaved woodland", "hard standing","amenity grass/turf")
+plants_NHMhabitats <- plants[plants$Habitat.y %in% wanted_habitats,]
+new_plants_nhmhabitat <- remove_duplicates(plants_NHMhabitats, columns = "Habitat.y")
+similarity_nhmhabitat <- species_similarity(new_plants_nhmhabitat)
+png(file.path(figure_out, "NHMHabitatsSimiarity.png"))
+levelplot(similarity_nhmhabitat, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "", xlab = "")
+dev.off()
 ############################
 ## Species over time
 ############################
