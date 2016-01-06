@@ -1,6 +1,6 @@
 ###### 1. Change working directory to "MetaAnalysis" folder
 
-setwd()
+setwd("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis")
 
 ## In column headings:
 ## "Current" always refers to estimates of the grounds as they are now
@@ -28,6 +28,7 @@ library(dplyr)
 library(car)
 library(Hmisc)
 library(effect)
+library(xlsx)
 
 #################
 ## Locations
@@ -155,7 +156,6 @@ density2 <- glmer(density ~ Habitat + taxa + (1|Study.ID), data = sampled_area, 
 density3 <- glmer(density ~ Habitat + (1|Study.ID), data = sampled_area, family = poisson)
 anova(density2, density3)
 summary(density3)
-model_plot(density3) ## That's ok
 
 density3_means <- model_Means(density3)
 png(file.path(figure_out, "Habitat_density.png"), pointsize=11)
@@ -252,6 +252,10 @@ habitat_areas[20, c(2: 12)] <- colSums(habitat_areas[,c(2:12)], na.rm = TRUE)
 
 write.csv(habitat_areas, file = "Scripts/Table/Habitat_totals.csv", row.names = FALSE)
 
+xlsx <- createWorkbook()
+xlsx1 <- createSheet(wb=xlsx, sheetName="WLG")
+addDataFrame(habitat_areas[,1:4], sheet=xlsx1, row.names = FALSE)
+saveWorkbook(xlsx, "Scripts/Table/Habitat_totals.xlsx")
 
 #############################################
 ### PLOTS WITH ALL COEFFICIENTS
@@ -270,3 +274,26 @@ png(file.path(figure_out, "Habitat_density_plusmissing.png"), pointsize=11)
 	axis(1, at=1:length(labs2), labels = labs2, las = 2)
 	mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
 dev.off()
+
+#################
+## MAP
+#################
+studies_used <- unique(density3@frame$Study.ID)
+ 
+ studies_modelled <- garden[garden$Study.ID %in% studies_used,]
+ 
+ coord<-aggregate(cbind(studies_modelled$long, studies_modelled$lat), list(studies_modelled$Study.ID), max)
+ coord$X<-coord$Group.1
+ coord<-coord[2:4]
+ names(coord)<-c("Long", "Lat", "X")
+ dsSPDF<-SpatialPointsDataFrame(coord[,1:2], data.frame(coord[,1:3]))
+ proj4string(dsSPDF)<-CRS("+proj=longlat")
+
+png(file.path(figure_out, "Map_ModelledStudes.png"), pointsize=11)
+	 par(mar=c(0, 0, 0, 0))
+	 map('worldHires', c("UK"),border=0,fill=TRUE, col="forestgreen",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
+	 points(dsSPDF, col="black", bg="black", cex= 1.5, pch=19)
+	 text(-7, 49.5, "Figure 1 \nMap of study locations", pos=4)
+dev.off()
+
+
