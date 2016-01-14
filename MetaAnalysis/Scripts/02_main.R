@@ -367,6 +367,116 @@ png(file.path(figure_out, "Habitat_density_strong_plusmissing.png"), pointsize=1
 	mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
 dev.off()
 
+#################
+## Sampled richness
+#################
+
+head(sampled_area)
+richness_data <- sampled_area
+taxa <- relevel(taxa, ref = "Plants")
+
+
+any(richness_data$Taxon.Richness != round(richness_data$Taxon.Richness))
+richness <- round(richness_data$Taxon.Richness)
+any(richness != round(richness)) ## just to check
+
+
+hist(richness)
+table(richness_data$Habitat, taxa)
+table(taxa)
+
+richness1 <- glmer(richness ~ Habitat + taxa + (1|Study.ID), data = richness_data, family = poisson)
+richness2 <- glmer(richness ~ Habitat + (1|Study.ID), data = richness_data, family = poisson)
+anova(richness1, richness2) ## Significant
+
+
+	newdat <- expand.grid(Habitat = levels(richness1@frame[,2]), taxa = levels(richness1@frame[,3]), richness= 0)	
+	newdat$richness <- predict(richness1,newdat,re.form=NA)
+	mm <- model.matrix(terms(richness1),newdat)
+	pvar1 <- diag(mm %*% tcrossprod(vcov(richness1),mm))
+	tvar1 <- pvar1+VarCorr(richness1)$Study.ID[1]  ## must be adapted for more complex models
+	cmult <- 1.96 ## could use 1.96
+	newdat <- data.frame(
+	    newdat
+	    , plo = newdat$richness-cmult*sqrt(pvar1) ## Fixed effects uncertanty only
+	    , phi = newdat$richness +cmult*sqrt(pvar1)
+	    , tlo = newdat$richness-cmult*sqrt(tvar1) ## Fixed effects uncertanty and RE variance
+	    , thi = newdat$richness +cmult*sqrt(tvar1))
+
+
+png(file.path(figure_out, "Habitat_sampledRichness.png"), pointsize=11)
+	labs <- levels(richness_data$Habitat)
+	par(mar=c(14, 4, 1, 1))
+	errbar(1:12, exp(newdat[1:12,3]), exp(newdat[1:12,4]), 
+		exp(newdat[1:12,5]), col = "white", main = "", sub ="", xlab ="", bty = "n", 
+		pch = 19, xaxt = "n", ylim=c(0,100), las = 1, cex= 1, ylab = "")
+	points(1:12,exp(newdat[1:12,3]),col="black",bg="white",pch=19,cex=1)
+	axis(1, at=1:12, labels = labs, las = 2)
+	mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
+dev.off()
+
+
+
+
+richness_areas <- data.frame(
+Habitat = c("Broadleaved woodland", "Acid grassland (heath)", "Chalk grassland", "Neutral grassland", "Fen (incl. reedbed)", "Marginal vegetation (pond edge)", "Ponds", "Green roof", "Species-poor hedgerow", "Species-rich hedgerow", "Short/perennial vegetation", "Amenity grass/turf", "Introduced shrubs", "Hard standing", "Fern and cycad planting", "Agricultural plants", "Paleogene Asteraceae", "Neogene grass", "Cretaceous Angiosperm shrubs", "Total"),
+Current_area_m2 = c(1978, 100, 425, 2050, 75, 190, 339, 9, 109, 77, 373.9, 3657, 2000, 9506, 0, 0, 0, 0, 0, NA),
+Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 736, 518, 1049, 9076, 760, 570, 177, 157, 245,NA)
+)
+
+
+totalCurrent <- sum(richness_areas$Current_area_m2[1:19], na.rm = TRUE)
+totalProposed <- sum(richness_areas$Proposed_area_m2[1:19], na.rm = TRUE)
+
+richness_means <- newdat[1:12,]
+
+richness_areas$Habitat <- tolower(habitat_areas$Habitat)
+richness_means$Habitat <- tolower(richness_means$Habitat)
+richness_means$Habitat %in% richness_areas$Habitat
+# Check this everytime
+
+richness_areas <- merge(richness_areas, richness_means, by.x = "Habitat", by.y = "Habitat", all.x = TRUE)[,c(1:3,5)]
+
+
+richness_areas$richness <- exp(richness_areas$richness)
+
+
+## Adding in other coefficients - modelled introduced shrubs
+richness_areas$richness[richness_areas$Habitat == "fern and cycad planting"] <- 
+		richness_areas$richness[richness_areas$Habitat == "introduced shrubs"] 
+
+					
+richness_areas$richness[richness_areas$Habitat == "cretaceous angiosperm shrubs"] <- 
+		richness_areas$richness[richness_areas$Habitat == "introduced shrubs"]
+
+
+richness_areas$richness[richness_areas$Habitat == "species-poor hedgerow"] <- 
+		richness_areas$richness[richness_areas$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
+		
+richness_areas$richness[richness_areas$Habitat == "neogene grass"] <- 
+		richness_areas$richness[richness_areas$Habitat == "amenity grass/turf"]
+		
+richness_areas$richness[richness_areas$Habitat =="paleogene asteraceae"] <- 
+		richness_areas$richness[richness_areas$Habitat == "short/perennial vegetation"]
+		
+richness_areas$richness[richness_areas$Habitat == "hard standing"] <- 0
+
+
+### Area weights
+
+
+richness_areas$Current_weight <- richness_areas$Current_area_m2/totalCurrent
+richness_areas$Current_Weighted_richness <- richness_areas$richness * richness_areas$Current_weight
+
+richness_areas$Proposed_weight <- richness_areas$Proposed_area_m2/totalProposed
+richness_areas$Proposed_Weighted_richness <- richness_areas$richness * richness_areas$Proposed_weight
+
+
+## Totals
+richness_areas[nrow(richness_areas), c(2:8)] <- colSums(richness_areas[1:nrow(richness_areas)-1,c(2:8)], na.rm = TRUE)
+richness_areas$Current_area_m2[nrow(richness_areas)] <- totalCurrent
+richness_areas$Proposed_area_m2[nrow(richness_areas)] <- totalProposed
+
 
 
 #################
