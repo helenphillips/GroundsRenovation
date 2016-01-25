@@ -478,6 +478,20 @@ richness_areas$Current_area_m2[nrow(richness_areas)] <- totalCurrent
 richness_areas$Proposed_area_m2[nrow(richness_areas)] <- totalProposed
 
 
+png(file.path(figure_out, "Habitat_richness_plusmissing.png"), pointsize=11)
+	missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing",
+		 "neogene grass", "paleogene asteraceae", "species-poor hedgerow")
+	labs <- levels(as.factor(richness_means$Habitat))
+	labs2 <- c(labs, missing_coefs)
+	par(mar=c(14, 4, 1, 1))
+	errbar(1:nrow(richness_means), exp(richness_means[,3]), exp(richness_means[,4]), exp(richness_means[,5]), 
+		col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,100), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
+	points(1:nrow(richness_means), exp(richness_means[,3]),col="black",bg="white",pch=19,cex=1)
+	missing_richness <- richness_areas$richness[richness_areas$Habitat %in% missing_coefs]
+	points((nrow(richness_means)+1):length(labs2), missing_richness, col="red", pch=19)
+	axis(1, at=1:length(labs2), labels = labs2, las = 2)
+	mtext("Within-sample Species Richness", side = 2, line = 2)
+dev.off()
 
 #################
 ## MAP
