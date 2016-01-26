@@ -388,7 +388,7 @@ table(taxa)
 richness1 <- glmer(richness ~ Habitat + taxa + (1|Study.ID), data = richness_data, family = poisson)
 richness2 <- glmer(richness ~ Habitat + (1|Study.ID), data = richness_data, family = poisson)
 anova(richness1, richness2) ## Significant
-
+summary(richness1)
 
 	newdat <- expand.grid(Habitat = levels(richness1@frame[,2]), taxa = levels(richness1@frame[,3]), richness= 0)	
 	newdat$richness <- predict(richness1,newdat,re.form=NA)
@@ -430,7 +430,7 @@ totalProposed <- sum(richness_areas$Proposed_area_m2[1:19], na.rm = TRUE)
 
 richness_means <- newdat[1:12,]
 
-richness_areas$Habitat <- tolower(habitat_areas$Habitat)
+richness_areas$Habitat <- tolower(richness_areas$Habitat)
 richness_means$Habitat <- tolower(richness_means$Habitat)
 richness_means$Habitat %in% richness_areas$Habitat
 # Check this everytime
@@ -492,6 +492,17 @@ png(file.path(figure_out, "Habitat_richness_plusmissing.png"), pointsize=11)
 	axis(1, at=1:length(labs2), labels = labs2, las = 2)
 	mtext("Within-sample Species Richness", side = 2, line = 2)
 dev.off()
+
+
+
+write.csv(richness_areas, file = "Scripts/Table/Habitat_totals_richness.csv", row.names = FALSE)
+
+
+xlsx <- createWorkbook()
+xlsx1 <- createSheet(wb=xlsx, sheetName="WLG")
+addDataFrame(richness_areas, sheet=xlsx1, row.names = FALSE)
+saveWorkbook(xlsx, "Scripts/Table/Habitat_totals_richness.xlsx")
+
 
 #################
 ## MAP
