@@ -51,9 +51,9 @@ garden <- OpenGS()
 #################
 ## Study info 
 #################
-# length(unique(garden$Study.ID)) ## 33
-# sources <- gsub("\\ [0-9]$", "", garden$Study.ID)
-# length(unique(sources)) ## 24
+ length(unique(garden$Study.ID)) ## 34
+ sources <- gsub("\\ [0-9]$", "", garden$Study.ID)
+ length(unique(sources)) ## 25
 
 
 #################
@@ -110,24 +110,24 @@ hist(garden$Corrected_Taxon.Richness)
 #########
 ## Data
 #########
-sampled_area <- garden[garden$SpeciesDensity == TRUE,] ## 349
-sampled_area <- sampled_area[sampled_area$Taxonimic.Level == "Species",] ## 345
-sampled_area <- sampled_area[complete.cases(sampled_area$Taxon.Richness),]## 323
+sampled_area <- garden[garden$SpeciesDensity == TRUE,] ## 369
+sampled_area <- sampled_area[sampled_area$Taxonimic.Level == "Species",] ## 365
+sampled_area <- sampled_area[complete.cases(sampled_area$Taxon.Richness),]## 343
 sampled_area <- droplevels(sampled_area)
 
 
 table(sampled_area$Habitat, sampled_area$Study.ID)
 table(sampled_area$Habitat)
 
-not_enough <- c("green roof", "Not present in NHM", "species-poor hedgerow", "Unsure/Not Clear", "Unspecified grass/meadows", "orchard", "ferns and cycad plantings", "hard standing")
+not_enough <- c("Not present in NHM", "species-poor hedgerow", "Unsure/Not Clear", "Unspecified grass/meadows", "orchard", "ferns and cycad plantings", "hard standing")
 
-sampled_area <- sampled_area[!(sampled_area$Habitat %in% not_enough),] ## 305
+sampled_area <- sampled_area[!(sampled_area$Habitat %in% not_enough),] ## 325
 
 ## Need studies that have sampled more than one habitat
 sample_studies <- as.data.frame(aggregate(sampled_area$Habitat, list(sampled_area$Study.ID), function(x){N = length(unique(x, na.rm=TRUE))}))
 sample_studies <- sample_studies[sample_studies$x > 1,]
 ## The studies with only one habitat in are amenity grasslands (pretty much), so not losing anything by removing
-sampled_area <- sampled_area[sampled_area$Study.ID %in% sample_studies$Group.1,] ## 160
+sampled_area <- sampled_area[sampled_area$Study.ID %in% sample_studies$Group.1,] ## 180
 sampled_area <- droplevels(sampled_area)
 
 table(sampled_area$Habitat)
@@ -136,7 +136,7 @@ table(sampled_area$Study.ID, sampled_area$Habitat)
 table(sampled_area$Study.ID, sampled_area$Taxa)
 
 exclude_these_studies <- c("2003_Thompson 1")
-sampled_area <- sampled_area[!(sampled_area$Study.ID %in% exclude_these_studies),] # 156
+sampled_area <- sampled_area[!(sampled_area$Study.ID %in% exclude_these_studies),] # 176
 sampled_area <- droplevels(sampled_area) 
 
 sampled_area$Habitat <- relevel(sampled_area$Habitat, ref = "broadleaved woodland")
@@ -154,7 +154,7 @@ density <- round(sampled_area$Corrected_Taxon.Richness)
 
 density2 <- glmer(density ~ Habitat + taxa + (1|Study.ID), data = sampled_area, family = poisson)
 density3 <- glmer(density ~ Habitat + (1|Study.ID), data = sampled_area, family = poisson)
-anova(density2, density3)
+anova(density2, density3) # Not significant
 summary(density3)
 
 density3_means <- model_Means(density3)
@@ -387,32 +387,20 @@ table(taxa)
 
 richness1 <- glmer(richness ~ Habitat + taxa + (1|Study.ID), data = richness_data, family = poisson)
 richness2 <- glmer(richness ~ Habitat + (1|Study.ID), data = richness_data, family = poisson)
-anova(richness1, richness2) ## Significant
-summary(richness1)
-
-	newdat <- expand.grid(Habitat = levels(richness1@frame[,2]), taxa = levels(richness1@frame[,3]), richness= 0)	
-	newdat$richness <- predict(richness1,newdat,re.form=NA)
-	mm <- model.matrix(terms(richness1),newdat)
-	pvar1 <- diag(mm %*% tcrossprod(vcov(richness1),mm))
-	tvar1 <- pvar1+VarCorr(richness1)$Study.ID[1]  ## must be adapted for more complex models
-	cmult <- 1.96 ## could use 1.96
-	newdat <- data.frame(
-	    newdat
-	    , plo = newdat$richness-cmult*sqrt(pvar1) ## Fixed effects uncertanty only
-	    , phi = newdat$richness +cmult*sqrt(pvar1)
-	    , tlo = newdat$richness-cmult*sqrt(tvar1) ## Fixed effects uncertanty and RE variance
-	    , thi = newdat$richness +cmult*sqrt(tvar1))
+anova(richness1, richness2) ## Not significant
+summary(richness2)
+richness2_means <- model_Means(richness2)
 
 
 png(file.path(figure_out, "Habitat_sampledRichness.png"), pointsize=11)
 	labs <- levels(richness_data$Habitat)
 	par(mar=c(14, 4, 1, 1))
-	errbar(1:12, exp(newdat[1:12,3]), exp(newdat[1:12,4]), 
-		exp(newdat[1:12,5]), col = "white", main = "", sub ="", xlab ="", bty = "n", 
-		pch = 19, xaxt = "n", ylim=c(0,100), las = 1, cex= 1, ylab = "")
-	points(1:12,exp(newdat[1:12,3]),col="black",bg="white",pch=19,cex=1)
-	axis(1, at=1:12, labels = labs, las = 2)
-	mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
+	errbar(1:nrow(richness2_means), exp(richness2_means[1:13,2]), exp(richness2_means[1:13,3]), 
+		exp(richness2_means[1:13,4]), col = "white", main = "", sub ="", xlab ="", bty = "n", 
+		pch = 19, xaxt = "n", ylim=c(0,60), las = 1, cex= 1, ylab = "")
+	points(1:13,exp(richness2_means[1:13,2]),col="black",bg="white",pch=19,cex=1)
+	axis(1, at=1:13, labels = labs, las = 2)
+	mtext("Within-sample Species Richess", side = 2, line = 2)
 dev.off()
 
 
@@ -428,14 +416,14 @@ Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 736, 518, 104
 totalCurrent <- sum(richness_areas$Current_area_m2[1:19], na.rm = TRUE)
 totalProposed <- sum(richness_areas$Proposed_area_m2[1:19], na.rm = TRUE)
 
-richness_means <- newdat[1:12,]
+richness_means <- richness2_means[1:13,]
 
 richness_areas$Habitat <- tolower(richness_areas$Habitat)
 richness_means$Habitat <- tolower(richness_means$Habitat)
 richness_means$Habitat %in% richness_areas$Habitat
 # Check this everytime
 
-richness_areas <- merge(richness_areas, richness_means, by.x = "Habitat", by.y = "Habitat", all.x = TRUE)[,c(1:3,5)]
+richness_areas <- merge(richness_areas, richness_means, by.x = "Habitat", by.y = "Habitat", all.x = TRUE)[,c(1:3,4)]
 
 
 richness_areas$richness <- exp(richness_areas$richness)
@@ -484,9 +472,9 @@ png(file.path(figure_out, "Habitat_richness_plusmissing.png"), pointsize=11)
 	labs <- levels(as.factor(richness_means$Habitat))
 	labs2 <- c(labs, missing_coefs)
 	par(mar=c(14, 4, 1, 1))
-	errbar(1:nrow(richness_means), exp(richness_means[,3]), exp(richness_means[,4]), exp(richness_means[,5]), 
-		col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,100), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
-	points(1:nrow(richness_means), exp(richness_means[,3]),col="black",bg="white",pch=19,cex=1)
+	errbar(1:nrow(richness_means), exp(richness_means[,2]), exp(richness_means[,3]), exp(richness_means[,4]), 
+		col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,60), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
+	points(1:nrow(richness_means), exp(richness_means[,2]),col="black",bg="white",pch=19,cex=1)
 	missing_richness <- richness_areas$richness[richness_areas$Habitat %in% missing_coefs]
 	points((nrow(richness_means)+1):length(labs2), missing_richness, col="red", pch=19)
 	axis(1, at=1:length(labs2), labels = labs2, las = 2)
