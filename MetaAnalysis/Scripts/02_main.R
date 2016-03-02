@@ -198,55 +198,20 @@ Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 736, 518, 104
 )
 
 
-habitat_areas_strong <- data.frame(
-Habitat = c("Broadleaved woodland", "Acid grassland (heath)", "Chalk grassland", "Neutral grassland", "Fen (incl. reedbed)", "Marginal vegetation (pond edge)", "Ponds", "Green roof", "Species-poor hedgerow", "Species-rich hedgerow", "Short/perennial vegetation", "Amenity grass/turf", "Introduced shrubs", "Hard standing", "Fern and cycad planting", "Agricultural plants", "Paleogene Asteraceae", "Neogene grass", "Cretaceous Angiosperm shrubs", "Total"),
-Current_area_m2 = c(1978, 100, 425, 2050, 75, 190, 339, 9, 109, 77, 373.9, 3657, 2000, 9506, 0, 0, 0, 0, 0, NA),
-Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 736, 518, 1049, 9076, 760, 570, 177, 157, 245, NA)
-)
-
-
 totalCurrent <- sum(habitat_areas$Current_area_m2[1:19], na.rm = TRUE)
 totalProposed <- sum(habitat_areas$Proposed_area_m2[1:19], na.rm = TRUE)
 
 
 habitat_areas$Habitat <- tolower(habitat_areas$Habitat)
-habitat_areas_strong$Habitat <- tolower(habitat_areas_strong$Habitat)
 density3_means$Habitat <- tolower(density3_means$Habitat)
 density3_means$Habitat %in% habitat_areas$Habitat
 # Check this everytime
 
 habitat_areas <- merge(habitat_areas, density3_means, by.x = "Habitat", by.y = "Habitat", all.x = TRUE)[,1:4]
-habitat_areas_strong <- merge(habitat_areas_strong, density3_means, by.x = "Habitat", by.y = "Habitat", all.x = TRUE)[,1:4]
 
 names(habitat_areas)[4] <- "SpeciesDensity_10m2"
-names(habitat_areas_strong)[4] <- "SpeciesDensity_10m2"
 
 habitat_areas$SpeciesDensity_10m2 <- exp(habitat_areas$SpeciesDensity_10m2)
-habitat_areas_strong$SpeciesDensity_10m2 <- exp(habitat_areas_strong $SpeciesDensity_10m2)
-
-## Adding in other coefficients - Strong
-habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "introduced shrubs"] <- 
-		habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
-	
-		
-habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "fern and cycad planting"] <- 
-		habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "broadleaved woodland"] * introduced_shrubs_coef
-
-					
-habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "cretaceous angiosperm shrubs"] <- 
-		habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "broadleaved woodland"] * angiosperm_shrubs_coef
-
-
-habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "species-poor hedgerow"] <- 
-		habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
-		
-habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "neogene grass"] <- 
-		habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "amenity grass/turf"]
-		
-habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "paleogene asteraceae"] <- 
-		habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "short/perennial vegetation"]
-		
-habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat == "hard standing"] <- 0
 
 
 ## Adding in other coefficients - modelled introduced shrubs
@@ -276,10 +241,6 @@ habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
 habitat_areas$Corrected_SpeciesDensity_Current <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, z=0.1, newA=habitat_areas$Current_area_m2)
 habitat_areas$Corrected_SpeciesDensity_Proposed <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, z=0.1, newA=habitat_areas$Proposed_area_m2)
 
-habitat_areas_strong$Corrected_SpeciesDensity_Current <- calculate_density_cSAR(S= habitat_areas_strong$SpeciesDensity_10m2, A=10, z=0.1, newA= habitat_areas_strong$Current_area_m2)
-habitat_areas_strong$Corrected_SpeciesDensity_Proposed <- calculate_density_cSAR(S= habitat_areas_strong$SpeciesDensity_10m2, A=10, z=0.1, newA= habitat_areas_strong$Proposed_area_m2)
-
-
 
 ### Area weights
 
@@ -293,25 +254,10 @@ habitat_areas$Proposed_Weighted_density <- habitat_areas$SpeciesDensity_10m2 * h
 habitat_areas$Proposed_Weighted_Correcteddensity <- habitat_areas$Corrected_SpeciesDensity_Proposed * habitat_areas$Proposed_weight
 
 
-habitat_areas_strong$Current_weight <- habitat_areas_strong$Current_area_m2/totalCurrent
-habitat_areas_strong$Current_Weighted_density <- habitat_areas_strong$SpeciesDensity_10m2 * habitat_areas_strong$Current_weight
-habitat_areas_strong$Current_Weighted_Correcteddensity <- habitat_areas_strong$Corrected_SpeciesDensity_Current * habitat_areas_strong$Current_weight
-
-habitat_areas_strong$Proposed_weight <- habitat_areas_strong$Proposed_area_m2/totalProposed
-habitat_areas_strong$Proposed_Weighted_density <- habitat_areas_strong$SpeciesDensity_10m2 * habitat_areas_strong$Proposed_weight
-habitat_areas_strong$Proposed_Weighted_Correcteddensity <- habitat_areas_strong$Corrected_SpeciesDensity_Proposed * habitat_areas_strong$Proposed_weight
-
-
 ## Totals
 habitat_areas[nrow(habitat_areas), c(2: 12)] <- colSums(habitat_areas[1:nrow(habitat_areas)-1,c(2:12)], na.rm = TRUE)
 habitat_areas$Current_area_m2[nrow(habitat_areas)] <- totalCurrent
 habitat_areas$Proposed_area_m2[nrow(habitat_areas)] <- totalProposed
-
-habitat_areas_strong[nrow(habitat_areas_strong), c(2: 12)] <-
-	colSums(habitat_areas_strong[1:nrow(habitat_areas_strong)-1,c(2:12)], na.rm = TRUE)
-habitat_areas_strong$Current_area_m2[nrow(habitat_areas_strong)] <- totalCurrent
-habitat_areas_strong$Proposed_area_m2[nrow(habitat_areas_strong)] <- totalProposed
-
 
 
 t <- habitat_areas[,c(1, 9, 12)]
@@ -322,12 +268,12 @@ write.csv(habitat_areas_strong, file = "Scripts/Table/Habitat_totals_strong.csv"
 
 xlsx <- createWorkbook()
 xlsx1 <- createSheet(wb=xlsx, sheetName="WLG")
-addDataFrame(habitat_areas[,1:4], sheet=xlsx1, row.names = FALSE)
+addDataFrame(habitat_areas, sheet=xlsx1, row.names = FALSE)
 saveWorkbook(xlsx, "Scripts/Table/Habitat_totals.xlsx")
 
 xlsx2 <- createWorkbook()
 xlsx3 <- createSheet(wb=xlsx2, sheetName="WLG")
-addDataFrame(habitat_areas_strong[,1:4], sheet=xlsx3, row.names = FALSE)
+addDataFrame(habitat_areas_strong, sheet=xlsx3, row.names = FALSE)
 saveWorkbook(xlsx2, "Scripts/Table/Habitat_totals_strong.xlsx")
 
 
@@ -351,21 +297,6 @@ png(file.path(figure_out, "Habitat_density_plusmissing.png"), pointsize=11)
 dev.off()
 
 
-
-png(file.path(figure_out, "Habitat_density_strong_plusmissing.png"), pointsize=11)
-	missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing", "introduced shrubs",
-		 "neogene grass", "paleogene asteraceae", "species-poor hedgerow")
-	labs <- levels(sampled_area$Habitat)[-7]
-	labs2 <- c(labs, missing_coefs)
-	par(mar=c(14, 4, 1, 1))
-	errbar(1:(nrow(density3_means)-1), exp(density3_means[-7,2]), exp(density3_means[-7,3]), exp(density3_means[-7,4]), 
-		col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,40), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
-	points(1:(nrow(density3_means)-1), exp(density3_means[-7,2]),col="black",bg="white",pch=19,cex=1)
-	missing_densities <- habitat_areas_strong$SpeciesDensity_10m2[habitat_areas_strong$Habitat %in% missing_coefs]
-	points(nrow(density3_means):(length(labs2)), missing_densities, col="red", pch=19)
-	axis(1, at=1:length(labs2), labels = labs2, las = 2)
-	mtext(expression(Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
-dev.off()
 
 #################
 ## Sampled richness
@@ -490,6 +421,50 @@ xlsx <- createWorkbook()
 xlsx1 <- createSheet(wb=xlsx, sheetName="WLG")
 addDataFrame(richness_areas, sheet=xlsx1, row.names = FALSE)
 saveWorkbook(xlsx, "Scripts/Table/Habitat_totals_richness.xlsx")
+
+
+#################
+## Density and Richness plot
+#################
+
+simpleCap <- function(x) {
+  s <- strsplit(x, " ")[[1]]
+  paste(toupper(substring(s, 1,1)), substring(s, 2),
+      sep="", collapse=" ")
+}
+
+
+
+png(file.path(figure_out, "Habitat_density&Richness_plusmissing.png"), pointsize=11)
+	missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing", 
+		 "neogene grass", "paleogene asteraceae", "species-poor hedgerow")
+	labs <- levels(sampled_area$Habitat)
+	labs2 <- c(labs, missing_coefs)
+	labs2 <- sapply(labs2, simpleCap)
+	labs2[9] <- "Marginal Vegetation (pond edge)"
+	labs2[15] <- "Fern and Cycad Planting"
+	par(mar=c(14, 4, 1, 1))
+	
+	# Density estimates
+	errbar(1:nrow(density3_means), exp(density3_means[,2]), exp(density3_means[,3]), exp(density3_means[,4]), 
+		col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,60), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
+	points(1:nrow(density3_means),exp(density3_means[,2]),col="black",bg="white",pch=19,cex=1)
+	missing_densities <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat %in% missing_coefs]
+	points((nrow(density3_means)+1):(length(labs2)), missing_densities, col="red", pch=19)
+	# Species richness estimates
+	errbar(1:nrow(richness_means)+0.2, exp(richness_means[,2]), exp(richness_means[,4]), exp(richness_means[,3]), add=T, pch=1, cap=0.01, col ="white", errbar.col = "darkgrey")
+	
+	points(1:nrow(richness_means) + 0.2, exp(richness_means[,2]),col="darkgrey",bg="white",pch=19,cex=1)
+	
+	missing_richness <- richness_areas$richness[richness_areas$Habitat %in% missing_coefs]
+	points((nrow(richness_means)+1):(length(labs2)) + 0.2, missing_richness, col="pink", pch=19)
+
+
+	axis(1, at=1:length(labs2), labels = labs2, las = 2)
+	mtext(expression(Within-sample ~ Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
+	mtext("Within-sample Species Richness", side = 2, line = 3, col = "darkgrey")
+	
+dev.off()
 
 
 #################
