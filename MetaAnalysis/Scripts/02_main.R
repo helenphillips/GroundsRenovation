@@ -14,7 +14,7 @@ source("Scripts/Functions/GoogleSpreadsheets.R")
 source("Scripts/Functions/CheckComparisons.R")
 source("Scripts/Functions/DataFormat.R")
 source("Scripts/Functions/ModelFunctions.R")
-
+source("~/Dropbox/Functions/model_plot_one.R")
 #################
 ## Libraries
 #################
@@ -156,6 +156,9 @@ density2 <- glmer(density ~ Habitat + taxa + (1|Study.ID), data = sampled_area, 
 density3 <- glmer(density ~ Habitat + (1|Study.ID), data = sampled_area, family = poisson)
 anova(density2, density3) # Not significant
 summary(density3)
+model_plot_one(density3)
+
+save(density3, file = "Models/FinalDensityModel.rda")
 
 density3_means <- model_Means(density3)
 png(file.path(figure_out, "Habitat_density.png"), pointsize=11)
