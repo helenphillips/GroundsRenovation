@@ -7,6 +7,13 @@ source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/Remo
 source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesSimilarity.R")
 source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesOverTime.R")
 source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R")
+
+simpleCap <- function(x) {
+  s <- strsplit(x, " ")[[1]]
+  paste(toupper(substring(s, 1,1)), substring(s, 2),
+      sep="", collapse=" ")
+}
+
 ##############
 ## libraries
 ##############
@@ -84,6 +91,12 @@ wanted_habitats <- c("ponds", "neutral grassland","marginal vegetation (pond edg
 plants_NHMhabitats <- plants[plants$Habitat.y %in% wanted_habitats,]
 new_plants_nhmhabitat <- remove_duplicates(plants_NHMhabitats, columns = "Habitat.y")
 similarity_nhmhabitat <- species_similarity(new_plants_nhmhabitat)
+labs <- attr(similarity_nhmhabitat, "dimnames")[[1]]
+
+labs <-  c("Ponds", "Neutral Grassland", "Marginal Vegetation (pond edge)", "Short/Perennial Vegetation", "Fen (incl. Reedbed)", "Chalk Grassland", "Species-rich Hedgerow", "Acid Grassland (Heath)", "Broadleaved Woodland", "Hard Standing", "Amenity Grass/Turf")
+
+attr(similarity_nhmhabitat, "dimnames")[[1]] <- labs
+attr(similarity_nhmhabitat, "dimnames")[[2]] <- labs
 png(file.path(figure_out, "NHMHabitatsSimiarity.png"))
 levelplot(similarity_nhmhabitat, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "", xlab = "")
 dev.off()
