@@ -4,7 +4,7 @@ setwd("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis")
 
 ## In column headings:
 ## "Current" always refers to estimates of the grounds as they are now
-## "Proposed"refer to grounds estimates after renovation
+## "Proposed" refer to grounds estimates after renovation
 ## "Corrected" densities estimates are when the species density estimate has accounted for the area of the habitat
 
 #################
