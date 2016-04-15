@@ -42,27 +42,27 @@ Sensitivity_Analysis <- function(model, reps){
 	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "fern and cycad planting"] <- 
 		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "introduced shrubs"] 
 	habitat_areas$se[habitat_areas$Habitat == "fern and cycad planting"] <- 
-			habitat_areas$se[habitat_areas$Habitat == "introduced shrubs"] 
+			habitat_areas$se[habitat_areas$Habitat == "introduced shrubs"] * 1.5
 						
 	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- 
 			habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "introduced shrubs"]
 	habitat_areas$se[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- 
-			habitat_areas$se[habitat_areas$Habitat == "introduced shrubs"]
+			habitat_areas$se[habitat_areas$Habitat == "introduced shrubs"] * 1.5
 	
 	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-poor hedgerow"] <- 
 			habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
 	habitat_areas$se[habitat_areas$Habitat == "species-poor hedgerow"] <- 
-			habitat_areas$se[habitat_areas$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
+			habitat_areas$se[habitat_areas$Habitat == "species-rich hedgerow"] * 1.5
 			
 	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "neogene grass"] <- 
 			habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "amenity grass/turf"]
 	habitat_areas$se[habitat_areas$Habitat == "neogene grass"] <- 
-			habitat_areas$se[habitat_areas$Habitat == "amenity grass/turf"]
+			habitat_areas$se[habitat_areas$Habitat == "amenity grass/turf"] * 1.5
 			
 	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "paleogene asteraceae"] <- 
 			habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "short/perennial vegetation"]
 	habitat_areas$se[habitat_areas$Habitat == "paleogene asteraceae"] <- 
-			habitat_areas$se[habitat_areas$Habitat == "short/perennial vegetation"]
+			habitat_areas$se[habitat_areas$Habitat == "short/perennial vegetation"] * 1.5
 			
 	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
 	habitat_areas$se[habitat_areas$Habitat == "hard standing"] <- 0
