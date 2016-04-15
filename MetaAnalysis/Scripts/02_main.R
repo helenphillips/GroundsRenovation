@@ -156,6 +156,7 @@ density2 <- glmer(density ~ Habitat + taxa + (1|Study.ID), data = sampled_area, 
 density3 <- glmer(density ~ Habitat + (1|Study.ID), data = sampled_area, family = poisson)
 anova(density2, density3) # Not significant
 summary(density3)
+Anova(density3)
 model_plot_one(density3)
 
 save(density3, file = "Models/FinalDensityModel.rda")
@@ -323,6 +324,7 @@ richness1 <- glmer(richness ~ Habitat + taxa + (1|Study.ID), data = richness_dat
 richness2 <- glmer(richness ~ Habitat + (1|Study.ID), data = richness_data, family = poisson)
 anova(richness1, richness2) ## Not significant
 summary(richness2)
+Anova(richness2)
 richness2_means <- model_Means(richness2)
 
 
