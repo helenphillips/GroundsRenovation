@@ -1,5 +1,10 @@
-source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/RemoveDuplicates.R")
-source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesSimilarity.R")
+if(Sys.info()["nodename"] == "Helens-MacBook-Pro.local"){
+	path = "/Users/helenphillips/PhD_git/WildlifeGarden_chapter/"
+}
+
+
+source(file.path(path, "PlantsDatabase/Scripts/Functions/RemoveDuplicates.R"))
+source(file.path(path, "PlantsDatabase/Scripts/Functions/SpeciesSimilarity.R"))
 
 
 
@@ -15,6 +20,8 @@ nrow(plants) # 5731
 plants <- plants[plants$NBN.TVK != "",]
 nrow(plants) #5459 
 
+plants$YearLastRecorded[plants$YearLastRecorded == 2104] <- 2014
+
 names(plants)[1:2] <- c("ID", "Habitat")
 
 levels(plants$Code)[levels(plants$Code) == "GR01"] <- "G01"
@@ -23,8 +30,8 @@ levels(plants$Code)[levels(plants$Code) == "GR02"] <- "G02"
 new_plants <- remove_duplicates(plants, columns = "Code")
 
 
-## Just taking plants that have records in 2014 (or 2013)
-year <- c(2014, 2013)
+## Just taking plants that have records in 2015, 2014 or 2013
+year <- c(2015, 2014, 2013)
 
 new_plants_2014 <- list()
 for(list in 1:length(new_plants)){
@@ -40,4 +47,4 @@ newdat <- cbind(newdat, firstline)
 
 newdat <- newdat[order(newdat$Code),]
 
-write.csv(newdat, file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Papers/PlantsDatabase/PlantsDatabaseExtract_2015_11_18.csv")
+write.csv(newdat, file = "~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Papers/PlantsDatabase/PlantsDatabaseExtract_2016_06_02.csv")
