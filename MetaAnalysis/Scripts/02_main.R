@@ -298,6 +298,8 @@ richness2 <- glmer(richness ~ Habitat + (1|Study.ID), data = richness_data, fami
 anova(richness1, richness2) ## Not significant
 summary(richness2)
 Anova(richness2)
+save(richness2, file = "Models/FinalRichnessModel.rda")
+
 richness2_means <- model_Means(richness2)
 
 
