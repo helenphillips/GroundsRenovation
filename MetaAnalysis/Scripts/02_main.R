@@ -1,5 +1,4 @@
 ###### 1. Change working directory to "MetaAnalysis" folder
-
 setwd("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis")
 
 ## In column headings:
@@ -10,10 +9,10 @@ setwd("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis")
 #################
 ## Functions
 #################
-source("Scripts/Functions/GoogleSpreadsheets.R")
-source("Scripts/Functions/CheckComparisons.R")
-source("Scripts/Functions/DataFormat.R")
-source("Scripts/Functions/ModelFunctions.R")
+source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R")
+source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/CheckComparisons.R")
+source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/DataFormat.R")
+source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/ModelFunctions.R")
 source("~/Dropbox/Functions/model_plot_one.R")
 #################
 ## Libraries
@@ -34,7 +33,7 @@ library(xlsx)
 ## Locations
 #################
 
-figure_out <- "Scripts/Figures"
+figure_out <- "Figures"
 
 #################
 ## Data
@@ -54,25 +53,6 @@ garden <- OpenGS()
  length(unique(garden$Study.ID)) ## 34
  sources <- gsub("\\ [0-9]$", "", garden$Study.ID)
  length(unique(sources)) ## 25
-
-
-#################
-## MAP
-#################
-# coord<-aggregate(cbind(garden$long, garden$lat), list(garden$Study.ID), max)
-# coord$X<-coord$Group.1
-# coord<-coord[2:4]
-# names(coord)<-c("Long", "Lat", "X")
-# dsSPDF<-SpatialPointsDataFrame(coord[,1:2], data.frame(coord[,1:3]))
-# proj4string(dsSPDF)<-CRS("+proj=longlat")
-
-# png(file.path(figure_out, "Map.png"), pointsize=11)
-	# par(mar=c(0, 0, 0, 0))
-	# map('worldHires', c("UK"),border=0,fill=TRUE, col="forestgreen",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
-	# points(dsSPDF, col="black", bg="black", cex= 1.5, pch=19)
-	# text(-7, 49.5, "Figure 1 \nMap of study locations", pos=4)
-# dev.off()
-
 
 #################
 ## Data Exploration
@@ -267,19 +247,12 @@ habitat_areas$Proposed_area_m2[nrow(habitat_areas)] <- totalProposed
 t <- habitat_areas[,c(1, 9, 12)]
 t$diff <- t[,3] - t[,2]
 
-write.csv(habitat_areas, file = "Scripts/Table/Habitat_totals.csv", row.names = FALSE)
-write.csv(habitat_areas_strong, file = "Scripts/Table/Habitat_totals_strong.csv", row.names = FALSE)
+write.csv(habitat_areas, file = "Table/Habitat_totals.csv", row.names = FALSE)
 
 xlsx <- createWorkbook()
 xlsx1 <- createSheet(wb=xlsx, sheetName="WLG")
 addDataFrame(habitat_areas, sheet=xlsx1, row.names = FALSE)
-saveWorkbook(xlsx, "Scripts/Table/Habitat_totals.xlsx")
-
-xlsx2 <- createWorkbook()
-xlsx3 <- createSheet(wb=xlsx2, sheetName="WLG")
-addDataFrame(habitat_areas_strong, sheet=xlsx3, row.names = FALSE)
-saveWorkbook(xlsx2, "Scripts/Table/Habitat_totals_strong.xlsx")
-
+saveWorkbook(xlsx, "Table/Habitat_totals.xlsx")
 
 
 #############################################
@@ -419,13 +392,13 @@ dev.off()
 
 
 
-write.csv(richness_areas, file = "Scripts/Table/Habitat_totals_richness.csv", row.names = FALSE)
+write.csv(richness_areas, file = "Table/Habitat_totals_richness.csv", row.names = FALSE)
 
 
 xlsx <- createWorkbook()
 xlsx1 <- createSheet(wb=xlsx, sheetName="WLG")
 addDataFrame(richness_areas, sheet=xlsx1, row.names = FALSE)
-saveWorkbook(xlsx, "Scripts/Table/Habitat_totals_richness.xlsx")
+saveWorkbook(xlsx, "Table/Habitat_totals_richness.xlsx")
 
 
 #################
@@ -476,21 +449,21 @@ dev.off()
 ## MAP
 #################
 studies_used <- unique(density3@frame$Study.ID)
+canada <- c("2011_MacIvor 1", "2011_MacIvor 2")
+studies_used <- studies_used[!(studies_used %in% canada)]
+studies_modelled <- garden[garden$Study.ID %in% studies_used,]
  
- studies_modelled <- garden[garden$Study.ID %in% studies_used,]
- 
- coord<-aggregate(cbind(studies_modelled$long, studies_modelled$lat), list(studies_modelled$Study.ID), max)
- coord$X<-coord$Group.1
- coord<-coord[2:4]
- names(coord)<-c("Long", "Lat", "X")
- dsSPDF<-SpatialPointsDataFrame(coord[,1:2], data.frame(coord[,1:3]))
- proj4string(dsSPDF)<-CRS("+proj=longlat")
+coord<-aggregate(cbind(studies_modelled$long, studies_modelled$lat), list(studies_modelled$Study.ID), max)
+coord$X<-coord$Group.1
+coord<-coord[2:4]
+names(coord)<-c("Long", "Lat", "X")
+dsSPDF<-SpatialPointsDataFrame(coord[,1:2], data.frame(coord[,1:3]))
+proj4string(dsSPDF)<-CRS("+proj=longlat")
 
 png(file.path(figure_out, "Map_ModelledStudes.png"), pointsize=11)
 	 par(mar=c(0, 0, 0, 0))
 	 map('worldHires', c("UK"),border=0,fill=TRUE, col="forestgreen",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
 	 points(dsSPDF, col="black", bg="black", cex= 1.5, pch=19)
-	 text(-7, 49.5, "Figure 1 \nMap of study locations", pos=4)
 dev.off()
 
 
