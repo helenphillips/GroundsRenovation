@@ -1,12 +1,12 @@
 ###### 1. Change working directory to "MetaAnalysis" folder
 
-setwd("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis")
+setwd("~/Box Sync/help/PhD_Copy/Wildlife Garden/MetaAnalysis")
 
 ###### 2. Libraries
 library(lme4)
-source("Scripts/Functions/GoogleSpreadsheets.R")
-source("Scripts/Functions/DataFormat.R")
-source("Scripts/Functions/SensitivityAnalysis.R")
+source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R")
+source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/DataFormat.R")
+source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/SensitivityAnalysis.R")
 
 
 ###### 3. Model
@@ -16,7 +16,7 @@ garden <- OpenGS()
 
 
 #### 4. New dataframe
-figure_out <- "Scripts/Figures"
+figure_out <- "Figures"
 
 
 

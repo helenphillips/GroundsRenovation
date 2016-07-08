@@ -6,7 +6,7 @@ Sensitivity_Analysis <- function(model, reps){
 	
 	newdat[2] <- predict(model,newdat,re.form=NA)
 	mm <- model.matrix(terms(model),newdat)
-	pvar1 <- diag(mm %*% tcrossprod(vcov(model),mm))
+	pvar1 <- diag(mm %*% tcrossprod(as.matrix(vcov(model)),mm))
 	# tvar1 <- pvar1+VarCorr(density3)$Study.ID[1]  ## must be adapted for more complex models
 	newdat$se = sqrt(pvar1) ## Fixed effects uncertanty only
 
