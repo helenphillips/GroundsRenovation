@@ -1,12 +1,14 @@
 ##############
 ## FUNCTIONS
 ##############
+if(Sys.info()['nodename'] == "helensminimac.nhm.ac.uk"){
+	path = "/Users/hp1111/PhD/git_phdChapters/git_WildlifeGarden"
+}
 
-
-source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/RemoveDuplicates.R")
-source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesSimilarity.R")
-source("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Functions/SpeciesOverTime.R")
-source("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R")
+source(file.path(path, "/PlantsDatabase/Scripts/Functions/RemoveDuplicates.R"))
+source(file.path(path, "/PlantsDatabase/Scripts/Functions/SpeciesSimilarity.R"))
+source(file.path(path, "/PlantsDatabase/Scripts/Functions/SpeciesOverTime.R"))
+source(file.path(path, "/MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R"))
 
 simpleCap <- function(x) {
   s <- strsplit(x, " ")[[1]]
@@ -25,7 +27,7 @@ library(ggplot2)
 ## FOLDERS
 ##############
 
-figure_out <- "~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Figures"
+figure_out <- "~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Figures"
 
 
 
@@ -33,6 +35,8 @@ figure_out <- "~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Scripts/Figures
 ## DATA
 ##############
 garden <- OpenGS()
+## WHen not working
+## garden <- read.csv("/Users/hp1111/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Data/Data_extract_2016-06-02.csv")
 nhm <- garden[garden$Study.ID == "PlantDatabaseExtract",]
 
 plants <- read.csv("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/DataFiles/PlantsByBed_NBN_Combined_2015-11-05-CMTR.csv")
