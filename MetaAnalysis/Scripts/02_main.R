@@ -1,5 +1,5 @@
 ###### 1. Change working directory to "MetaAnalysis" folder
-setwd("~/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis")
+setwd("~/Box Sync/help/PhD_Copy/Wildlife Garden/MetaAnalysis")
 
 ## In column headings:
 ## "Current" always refers to estimates of the grounds as they are now
@@ -67,11 +67,11 @@ garden$Habitat.Area_metres <- convertArea(garden$Habitat.Area, garden$Habitat.Ar
 garden$SpeciesDensity <- FALSE
 
 # When we know sampling area, coverting to species density per 10m2, and changing the "Flag"
-garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, z=0.1, newA = 10)) ## 
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, z=0.07, newA = 10)) ## 
 garden$SpeciesDensity <- ifelse(is.na(garden$Sampled.Area_metres), FALSE, TRUE)
 
 ## Calculate a species density for when an entire area has been sampled.
-garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Habitat.Area_metres, z=0.1, newA=10), garden$Corrected_Taxon.Richness)
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Habitat.Area_metres, z=0.07, newA=10), garden$Corrected_Taxon.Richness)
 garden$SpeciesDensity <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), TRUE, garden$SpeciesDensity)
 
 
@@ -177,8 +177,8 @@ species_poor_hedge_coef <- species_poor_hedge/species_rich_hedge
 
 habitat_areas <- data.frame(
 Habitat = c("Broadleaved woodland", "Acid grassland (heath)", "Chalk grassland", "Neutral grassland", "Fen (incl. reedbed)", "Marginal vegetation (pond edge)", "Ponds", "Green roof", "Species-poor hedgerow", "Species-rich hedgerow", "Short/perennial vegetation", "Amenity grass/turf", "Introduced shrubs", "Hard standing", "Fern and cycad planting", "Agricultural plants", "Paleogene Asteraceae", "Neogene grass", "Cretaceous Angiosperm shrubs", "Total"),
-Current_area_m2 = c(1978, 100, 425, 2050, 75, 190, 339, 9, 109, 77, 373.9, 3657, 2000, 9506, 0, 0, 0, 0, 0, NA),
-Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 736, 518, 1049, 9076, 760, 570, 177, 157, 245,NA)
+Current_area_m2 = c(1978.36, 111.71, 344.58, 2103.15, 64.6, 163.6, 341.28, 9.98, 109, 121.87, 423.65, 3303.63, 2218.62, 10415, 0, 0, 0, 0, 0, NA),
+Proposed_area_m2=c(3477.67, 82.1, 526, 2133.45, 133.86, 99.15, 459.37, 0, 0, 607.5, 0, 1573.91, 1346.69, 9525.16, 739.82, 583.97, 176.57, 156.27, 244.97,NA)
 )
 
 
@@ -222,8 +222,8 @@ habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
 
 
 ## Calculating the biodiversity change between the two
-habitat_areas$Corrected_SpeciesDensity_Current <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, z=0.1, newA=habitat_areas$Current_area_m2)
-habitat_areas$Corrected_SpeciesDensity_Proposed <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, z=0.1, newA=habitat_areas$Proposed_area_m2)
+habitat_areas$Corrected_SpeciesDensity_Current <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, z=0.07, newA=habitat_areas$Current_area_m2)
+habitat_areas$Corrected_SpeciesDensity_Proposed <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, z=0.07, newA=habitat_areas$Proposed_area_m2)
 
 
 ### Area weights
@@ -265,7 +265,7 @@ png(file.path(figure_out, "Habitat_density_plusmissing.png"), pointsize=11)
 	labs2 <- c(labs, missing_coefs)
 	par(mar=c(14, 4, 1, 1))
 	errbar(1:nrow(density3_means), exp(density3_means[,2]), exp(density3_means[,3]), exp(density3_means[,4]), 
-		col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,40), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
+		col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,45), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
 	points(1:nrow(density3_means),exp(density3_means[,2]),col="black",bg="white",pch=19,cex=1)
 	missing_densities <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat %in% missing_coefs]
 	points((nrow(density3_means)+1):(length(labs2)), missing_densities, col="red", pch=19)
@@ -319,9 +319,10 @@ dev.off()
 
 richness_areas <- data.frame(
 Habitat = c("Broadleaved woodland", "Acid grassland (heath)", "Chalk grassland", "Neutral grassland", "Fen (incl. reedbed)", "Marginal vegetation (pond edge)", "Ponds", "Green roof", "Species-poor hedgerow", "Species-rich hedgerow", "Short/perennial vegetation", "Amenity grass/turf", "Introduced shrubs", "Hard standing", "Fern and cycad planting", "Agricultural plants", "Paleogene Asteraceae", "Neogene grass", "Cretaceous Angiosperm shrubs", "Total"),
-Current_area_m2 = c(1978, 100, 425, 2050, 75, 190, 339, 9, 109, 77, 373.9, 3657, 2000, 9506, 0, 0, 0, 0, 0, NA),
-Proposed_area_m2=c(3267, 82, 526, 2141, 134, 122, 460, 83, 0, 159, 736, 518, 1049, 9076, 760, 570, 177, 157, 245,NA)
+Current_area_m2 = c(1978.36, 111.71, 344.58, 2103.15, 64.6, 163.6, 341.28, 9.98, 109, 121.87, 423.65, 3303.63, 2218.62, 10415, 0, 0, 0, 0, 0, NA),
+Proposed_area_m2=c(3477.67, 82.1, 526, 2133.45, 133.86, 99.15, 459.37, 0, 0, 607.5, 0, 1573.91, 1346.69, 9525.16, 739.82, 583.97, 176.57, 156.27, 244.97,NA)
 )
+
 
 
 totalCurrent <- sum(richness_areas$Current_area_m2[1:19], na.rm = TRUE)
