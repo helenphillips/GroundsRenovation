@@ -26,8 +26,7 @@ library(ggplot2)
 ##############
 ## FOLDERS
 ##############
-
-figure_out <- "~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/Figures"
+figure_out <- "~/Box Sync/help/PhD_Copy/Wildlife Garden/PlantsDatabase/Figures"
 
 
 
@@ -39,7 +38,7 @@ garden <- OpenGS()
 ## garden <- read.csv("/Users/hp1111/Dropbox/PhD_Copy/Wildlife Garden/MetaAnalysis/Data/Data_extract_2016-06-02.csv")
 nhm <- garden[garden$Study.ID == "PlantDatabaseExtract",]
 
-plants <- read.csv("~/Dropbox/PhD_Copy/Wildlife Garden/PlantsDatabase/DataFiles/PlantsByBed_NBN_Combined_2015-11-05-CMTR.csv")
+plants <- read.csv("~/Box Sync/help/PhD_Copy/Wildlife Garden/PlantsDatabase/DataFiles/PlantsByBed_NBN_Combined_2015-11-05-CMTR.csv")
 plants$X <- NULL
 nrow(plants) # 5731
 
@@ -61,8 +60,6 @@ u <- aggregate(plants$NBN.Name, list(plants$Code), function(x){unique = length(u
 areas <- cbind(l, u$x)
 
 
-new_plants <- remove_duplicates(plants, columns = "Habitat.x")
-
 
 ## Check that length of each habitat is expected
 #t <- as.data.frame(do.call(rbind, lapply(new_plants, function(x) nrow(x))))
@@ -77,19 +74,6 @@ new_plants <- remove_duplicates(plants, columns = "Habitat.x")
 ############################
 ## Number of Similar Species
 ############################
-
-similarity_habitat <- species_similarity(new_plants)
-
-png(file.path(figure_out, "HabitatSimiarity.png"), height = 700, width = 700)
-levelplot(similarity_habitat, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45, cex=1.1), y=list(cex=1.1)), ylab = "", xlab = "",cex.txt=1.5)
-dev.off()
-
-
-new_plants_area <- remove_duplicates(plants, columns = "Code")
-similarity_area <- species_similarity(new_plants_area)
-png(file.path(figure_out, "AreaSimiarity.png"), height = 1000, width = 1000)
-levelplot(similarity_area, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "", xlab = "")
-dev.off()
 
 wanted_habitats <- c("ponds", "neutral grassland","marginal vegetation (pond edge)","short/perennial vegetation", "fen (incl. reedbed)", "chalk grassland", "species-rich hedgerow", "acid grassland (heath)", "broadleaved woodland", "hard standing","amenity grass/turf")
 plants_NHMhabitats <- plants[plants$Habitat.y %in% wanted_habitats,]
