@@ -9,10 +9,17 @@ setwd("~/Box Sync/help/PhD_Copy/Wildlife Garden/MetaAnalysis")
 #################
 ## Functions
 #################
-source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R")
-source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/CheckComparisons.R")
-source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/DataFormat.R")
-source("/Users/helenphillips/PhD_git/WildlifeGarden_chapter/MetaAnalysis/Scripts/Functions/ModelFunctions.R")
+if(Sys.info()['nodename'] == "helensminimac.nhm.ac.uk"){
+	path <- "/Users/hp1111/PhD/git_phdChapters/git_WildlifeGarden"
+} else {
+	path <- "/Users/helenphillips/PhD_git/WildlifeGarden_chapter"
+}
+
+
+source(file.path(path, "MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R"))
+source(file.path(path, "MetaAnalysis/Scripts/Functions/CheckComparisons.R"))
+source(file.path(path, "MetaAnalysis/Scripts/Functions/DataFormat.R"))
+source(file.path(path, "MetaAnalysis/Scripts/Functions/ModelFunctions.R"))
 source("~/Dropbox/Functions/model_plot_one.R")
 #################
 ## Libraries
@@ -67,11 +74,11 @@ garden$Habitat.Area_metres <- convertArea(garden$Habitat.Area, garden$Habitat.Ar
 garden$SpeciesDensity <- FALSE
 
 # When we know sampling area, coverting to species density per 10m2, and changing the "Flag"
-garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, z=0.07, newA = 10)) ## 
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres), garden$Taxon.Richness, calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Sampled.Area_metres, z=0.1, newA = 10)) ## 
 garden$SpeciesDensity <- ifelse(is.na(garden$Sampled.Area_metres), FALSE, TRUE)
 
 ## Calculate a species density for when an entire area has been sampled.
-garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Habitat.Area_metres, z=0.07, newA=10), garden$Corrected_Taxon.Richness)
+garden$Corrected_Taxon.Richness <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), calculate_density_cSAR(S=garden$Taxon.Richness, A=garden$Habitat.Area_metres, z=0.1, newA=10), garden$Corrected_Taxon.Richness)
 garden$SpeciesDensity <- ifelse(is.na(garden$Sampled.Area_metres) & !(is.na(garden$Habitat.Area_metres)), TRUE, garden$SpeciesDensity)
 
 
@@ -222,8 +229,8 @@ habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
 
 
 ## Calculating the biodiversity change between the two
-habitat_areas$Corrected_SpeciesDensity_Current <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, z=0.07, newA=habitat_areas$Current_area_m2)
-habitat_areas$Corrected_SpeciesDensity_Proposed <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, z=0.07, newA=habitat_areas$Proposed_area_m2)
+habitat_areas$Corrected_SpeciesDensity_Current <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, z=0.1, newA=habitat_areas$Current_area_m2)
+habitat_areas$Corrected_SpeciesDensity_Proposed <- calculate_density_cSAR(S=habitat_areas$SpeciesDensity_10m2, A=10, z=0.1, newA=habitat_areas$Proposed_area_m2)
 
 
 ### Area weights
@@ -244,8 +251,6 @@ habitat_areas$Current_area_m2[nrow(habitat_areas)] <- totalCurrent
 habitat_areas$Proposed_area_m2[nrow(habitat_areas)] <- totalProposed
 
 
-t <- habitat_areas[,c(1, 9, 12)]
-t$diff <- t[,3] - t[,2]
 
 write.csv(habitat_areas, file = "Table/Habitat_totals.csv", row.names = FALSE)
 
@@ -253,6 +258,20 @@ xlsx <- createWorkbook()
 xlsx1 <- createSheet(wb=xlsx, sheetName="WLG")
 addDataFrame(habitat_areas, sheet=xlsx1, row.names = FALSE)
 saveWorkbook(xlsx, "Table/Habitat_totals.xlsx")
+
+## Percent change
+# Species density scaled
+curr <- habitat_areas$Current_Weighted_Correcteddensity[nrow(habitat_areas)]
+prop <- habitat_areas$Proposed_Weighted_Correcteddensity[nrow(habitat_areas)]
+
+((prop - curr)/curr) *100
+
+
+# Species density
+curr2 <- habitat_areas$Current_Weighted_density[nrow(habitat_areas)]
+prop2 <- habitat_areas$Proposed_Weighted_density[nrow(habitat_areas)]
+
+((prop2 - curr2)/curr2) *100
 
 
 #############################################
@@ -392,6 +411,13 @@ png(file.path(figure_out, "Habitat_richness_plusmissing.png"), pointsize=11)
 	axis(1, at=1:length(labs2), labels = labs2, las = 2)
 	mtext("Within-sample Species Richness", side = 2, line = 2)
 dev.off()
+
+
+# Species richness
+curr <- richness_areas$Current_Weighted_richness[nrow(richness_areas)]
+prop <- richness_areas$Proposed_Weighted_richness[nrow(richness_areas)]
+
+((prop - curr)/curr) *100
 
 
 
