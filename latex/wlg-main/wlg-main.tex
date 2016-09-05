@@ -6,6 +6,23 @@ Although urban ecology was originally a facet of ecology not studied, recently t
 
 The Natural History Museum in London (NHM) has 2.18 hectares of grounds around its buildings at its main South Kensington site, which for ease of reference can be split (at the centre of the museum building) into the ?eastern area? and ?western area? (Figure 1a). The museum grounds were renovated in 1995 with the creation of a one-acre (0.4 hectares) Wildlife Garden (henceforth WLG; \citealt{Honey:1999ln}) in the western area, that contains small areas of multiple lowland habitats present in southern England. The eastern area is heavily and repeatedly disturbed due to temporary attractions (a butterfly exhibit in the summer and ice rink in the winter); between these, it contains only regularly-replaced amenity grassland and areas of introduced shrubs with no habitats traditionally considered ?wildlife-friendly?. 
 
+\begin{figure}
+	\centering
+
+	\begin{subfigure}[t]{0.45\textwidth}
+		\centering
+		\includegraphics[scale=0.3, angle =90, trim={0 3cm 0 2cm},clip]{BiodiversityStrategyExistingSite}
+       		 \caption{}\label{fig:fig_a}
+	\end{subfigure}
+%
+	\begin{subfigure}[t]{0.45\textwidth}
+		\centering
+		\includegraphics[scale=0.3, angle =90, trim={0 3cm 0 2cm},clip]{BiodiversityStrategyProposedSite}
+		\caption{}\label{fig:fig_b}
+	\end{subfigure}
+	\caption{Some caption.}
+\end{figure}
+
 Since admission to the Museum became free in 2001 there has been an average of around 5 million visitors per year, with this number expected to increase. In part to alleviate the pressure of such large visitor numbers on the two current entrances, a third entrance through the Darwin Centre, at the west of the building, has been proposed. A Supplementary Planning Document from the Royal Borough of Kensington and Chelsea \citep{rbkc:2012} required the Museum to develop a unified scheme across the Grounds to balance the competing demands from historical significance of the iconic Waterhouse building, the setting of the listed building, visitor amenity and use of space for events. To this end, an international design competition was held in Autumn 2013. The competition attracted 43 entries from around the world, reduced to six finalists in early 2014 and a single winner unanimously chosen by a jury, chaired by Ian Henderson CBE, in April 2014. The competition was won by the team Niall McLaughlin Architects and Kim Wilkie whose plan contained an overarching continuous theme similar to that of the museum building, moving from ?extinct? habitats in the east to current British habitats in the west (Figure 1b, also see http://www.kimwilkie.com/london/natural-history-museum). The plans as proposed will result in the loss and reduction of some habitats, gain and expansion of others, and disturbance particularly in the eastern part of the grounds. The proposed changes have prompted concerns for the wildlife currently inhabiting the grounds, especially in the WLG in the southwestern corner of the site \citep{prospect:2015wg, guardian:2015wg, avery:2015wg, telegraph:2015wg, dailymail:2015wg}: a petition to stop the redevelopment of the grounds has attracted over 37,000 signatures as of 1 June 2016 \citep{changepetition:2015wg}.  
 
 Among the arguments used in criticising the proposals is that the grounds harbour unusually high levels of biodiversity \citep{changepetition:2015wg}, and that the proposed changes to the grounds would jeopardise this \citep{avery:2015wg}. Over 2800 species have been recorded from the WLG in the 21 years since its creation, in occasional structured surveys and more haphazard observations (Ware et al. 2016, unpublished). Despite species? having been recorded since 1995 when the WLG was created, there are still new species being discovered.  Perhaps the most notable was that of Dendrobaena pygmaea, not seen in the UK for 32 years prior to it?s discovery in the WLG.  Disturbance within and at the edge of the WLG has also created niches for previously unrecorded species to colonise. For example, common cudweed, Filago vulgaris, flixweed, Descurainia sophia, both vascular plants rare in London, were able to grown following disturbance from the building of the Darwin Centre in 2010 (Ware et al, 2016 unpublished).  However, in some orders there may be evidence that species accumulation curves are beginning to plateau.  Between 1995 and 2003 100 species of algae were recorded, however, since 2003 only 10 more species have been added. But this pattern is definitely not shared by all taxa; 18 species of Araneae were recorded by 2003, which had risen to 80 by 2015 (Ware et al, 2016 unpublished). 
@@ -47,7 +64,7 @@ ImageJ \cite{schindelin:2012fiji} was used to extract data from figures when req
 The data from each paper were collated as a ``study??. If a paper contained data from multiple sampling methodologies then it was split into multiple studies based on the methodology \citep[following][]{Hudson:2014predicts}. Data were recorded for each site within a study where possible, or as averages/totals for each habitat type within a study otherwise. For each study, we recorded whether it sampled invertebrates or plants. We classified the habitat of each site into one of the 19 habitat types in Table 1; any sampled habitats not present in the museum?s grounds or renovation plans were excluded from the analysis. Table 2 gives the data and metadata fields collected for each site.
 
 \subsection{WLG Plant Database}
-Data on plants from the WLG database were also included in the modelling dataset to increase the robustness of some habitat comparisons. The WLG is currently split into 55 zones of different size (See figure 1 in \citealt{Leigh:2003ln}), with each zone?s assemblage originally planted based on National Vegetation Classification communities citep{Honey:1999ln}. Between 1995 and 2015 a complete inventory of the plant species in each zone has been completed non-systematically every year. Because the database species binomials included some synonyms, species names of all records were standardised using the UK Species Inventory (UKSI) database \citep{Raper:2014wg}. Current WLG habitat types of each zone were taken from \citep{Leigh:2003ln} and confirmed by WLG habitat managers. With advice from members of the Grounds Project team, we classified each zone into a habitat type (Table 1) and the species richness of each zone was calculated as the total number of species surveyed between 2013 and 2015, and therefore most likely still present. Each zone was treated as a site, with the area estimated through digitisation of figure 1 in \cite{Leigh:2003ln}. Although the WLG database also contains data on other groups of organisms, such as invertebrates, these were not suitable for our analysis. Unlike the plants, where collection methodology was consistent, the sampling effort and methodology would be too heterogeneous across the other organisms to include in our analyses.
+Data on plants from the WLG database were also included in the modelling dataset to increase the robustness of some habitat comparisons. The WLG is currently split into 55 zones of different size (See Figure 1 in \citealt{Leigh:2003ln}), with each zone?s assemblage originally planted based on National Vegetation Classification communities citep{Honey:1999ln}. Between 1995 and 2015 a complete inventory of the plant species in each zone has been completed non-systematically every year. Because the database species binomials included some synonyms, species names of all records were standardised using the UK Species Inventory (UKSI) database \citep{Raper:2014wg}. Current WLG habitat types of each zone were taken from \citep{Leigh:2003ln} and confirmed by WLG habitat managers. With advice from members of the Grounds Project team, we classified each zone into a habitat type (Table 1) and the species richness of each zone was calculated as the total number of species surveyed between 2013 and 2015, and therefore most likely still present. Each zone was treated as a site, with the area estimated through digitisation of figure 1 in \cite{Leigh:2003ln}. Although the WLG database also contains data on other groups of organisms, such as invertebrates, these were not suitable for our analysis. Unlike the plants, where collection methodology was consistent, the sampling effort and methodology would be too heterogeneous across the other organisms to include in our analyses.
 
 \subsection{Accounting for area effects}
 As well as depending on the nature of the habitat, the expected number of species in a sample also depends on the area covered by the sample (the species area relationship, or SAR: \citealt{rosenzweig:1995species}) and the extent of the (often much larger) habitat patch within which the sample was taken (the species density-area relationship, or SDAR: Phillips et al. in review). Samples covering larger areas will encounter a wider range of microclimatic and other environmental conditions, meaning that more species have the potential to be sampled. Larger patches of habitat can additionally support larger populations of resident species meaning that species density is likely to be higher. Both of these relationships need to be considered in order to provide the best estimate of the net effects of the proposed redevelopment on biodiversity within the grounds.
@@ -86,18 +103,46 @@ Community similarity of the habitats within the current WLG was estimated using 
 \subsection{Meta-Analysis}
 The first literature search gained 101 articles and the second literature search acquired 1158 articles.  Further targeted searches acquired data from an additional 5 articles. Based on the data criteria, only data presented in 9 papers were suitable for modelling; these were collated into 11 studies based on methodology.  These studies contained sampled sites from across the U.K. (Figure 2), as well as one study in the U.S.A., and included suitable data we were able to access from the WLG database .
 
+\begin{figure}[t]
+	\centering
+	\includegraphics[]{Map_ModelledStudes}
+	\caption{Location of 11 studies from which data was acquired.}
+   	 \label{fig:wlgmap}
+\end{figure}
+
+
 The fixed effects of the mixed-effects model with species density (per 10m\textsuperscript{2}) as the response variable were simplified by the removal of the additive effect of taxon. Species density (per 10m\textsuperscript{2}) significantly varied between habitat types ($\tilde{\chi}^2$ = 353.18, d.f. = 12, p<0.01; Figure 3). Chalk grassland had the highest species density (per 10m\textsuperscript{2}), whilst pond and fen had the lowest among habitats for which sample-based data were available. 
 
 Similar to the species density model, the species richness model was also simplified with the removal of the additive effect of taxon.  Species richness significantly varied with habitat types ($\tilde{\chi}^2$ = 468.01, d.f. = 12, p<0.01; Figure 3).  The relative diversity of each of the habitats was largely consistent among the two models; estimates of species richness were, however, higher than those of species density
- 	 	
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[]{Habitat_density&Richness_plusmissing}
+	\caption{ModelCoefficients.}
+   	 \label{fig:wlgmodel}
+\end{figure}
+	 	
 Calculations for all three assumptions indicate an overall net increase in local biodiversity with the proposed plans for the museum?s grounds. Assumption 1 yields an increase of 11.17\%. Under Assumption 2, the increase is estimated to be 13.2\%. Assumption 3 gave the greatest increase (14.05\%) in overall net biodiversity under the proposed plans.
 
 \subsection{Sensitivity Analysis}
 When the analysis was repeated 1000 times, taking the habitat coefficients from a distribution, the proposed plans under Assumption 1 only resulted in a net loss of biodiversity in 0.1\% of the repetitions (Figure 4).
 
+\begin{figure}[t]
+	\centering
+	\includegraphics[]{SensitivityAnalysis}
+	\caption{Sensitivity analysis.}
+   	 \label{fig:wlgsensitivity}
+\end{figure}
+
 \subsection{WLG Species Similarity}
 The majority of habitats had very similar plant species composition to each other (Figure 5), though there were exceptions. For example, the majority of species from other habitats were not found in amenity grass/turf but nearly all species in amenity grass/turf were in most other habitats. Unsurprisingly, ponds had a highly dissimilar collection of species to every other habitat.
 
+\begin{figure}[t]
+	\centering
+	\includegraphics[]{NHMHabitatsSimiarity}
+	\caption{Compositional similarity analysis.}
+   	 \label{fig:wlgsimilarity}
+\end{figure}
 
 \section{Discussion}
 The findings of this meta-analysis indicate that the proposed plans for the museum grounds are expected to result in a net gain of local biodiversity. This is due to habitats with the highest modelled species density, such as chalk and neutral grassland, increasing in area under the new plans. Additionally, the new plans also see an increase in the number of habitats.  These findings are similar to earlier studies; a previous synthesis of findings from studies worldwide investigating biodiversity in urban parks found that increasing the habitat area and habitat diversity usually increased species richness \citep{Nielsen:2014ue}.  It is quite likely that both area and number of habitats are important predictors of biodiversity, and potentially it would be more appropriate to incorporate them within a single model (e.g. Choros model; \citealt{Triantis:2003jb}).
