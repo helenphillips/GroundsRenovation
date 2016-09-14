@@ -32,3 +32,5 @@ MetaAnalysis.zip
 MetaAnalysis/.dropbox
 "MetaAnalysis/Icon\r"
 MetaAnalysis/Scripts/.Rapp (Helen Phillips's conflicted copy 2015-12-05).history
+*.cls
+*.bbl
