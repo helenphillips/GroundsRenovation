@@ -8,26 +8,46 @@
 %% version 1.1 or newer of the wlpeerj.cls file, and
 %% the corresponding author info requires v1.2
 
-\documentclass[fleqn,10pt,lineno]{wlpeerj} % for journal submissions
+\documentclass[fleqn,10pt,lineno,natbib]{wlpeerj} % for journal submissions
 % \documentclass[fleqn,10pt]{wlpeerj} % for preprint submissions
 
 
+\newif\ifappendixStyle
+\appendixStylefalse
+
+\usepackage[hyphens]{url}
+\urlstyle{same}
+
+
+
+
 \usepackage{textcomp} %% For tildes
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\graphicspath{{"\string~/Box Sync/help/PhD_copy/Wildlife Garden/HighQualityFigures/"}{"\string~/Box Sync/help/PhD_copy/Wildlife Garden/MetaAnalysis/Figures/"}{"\string~/Box Sync/help/PhD_copy/Wildlife Garden/PlantsDatabase/Figures/"}}
+\usepackage[font=small,labelfont=bf]{caption}
 
+\title{Estimating the potential biodiversity impact of redeveloping small urban spaces: the Natural History Museum's grounds as a case study}
 
-
-\title{Article Title}
-
-\author[1]{First Author}
-\author[2]{Second Author}
-\affil[1]{Address of first author}
-\affil[2]{Address of second author}
-\corrauthor[1]{First Author}{f.author@email.com}
+\author[1,2]{Helen R. P. Phillips}
+\author[2]{Sandra Knapp}
+\author[1,2]{Andy Purvis}
+\affil[1]{Imperial College London, Silwood Park Campus, Buckhurst Rd, Ascot, SL5 7QN}
+\affil[2]{Natural History Museum, Department of Life Sciences, Cromwell Rd, London SW7 5BD}
+\corrauthor[1]{Helen R. P. Phillips}{hp1111@ic.ac.uk}
 
 % \keywords{Keyword1, Keyword2, Keyword3}
 
 \begin{abstract}
-Dummy abstract text. Dummy abstract text. Dummy abstract text. Dummy abstract text. Dummy abstract text. Dummy abstract text. Dummy abstract text. Dummy abstract text. Dummy abstract text. Dummy abstract text. Dummy abstract text.
+\textbf{Background:} With the increase in human population, the ability to predict biodiversity loss or gain as a result of land use change within an urban settings is important. Most models that link biodiversity and land use are at the wrong scale for  informing policy decisions, especially those related planning applications. Using the grounds of the Natural History Museum, London, as a case study, we show how methods used in global models can be applied to smaller spatial scales to influence urban planning. 
+
+\textbf{Methods:} Data were extracted from relevant primary literature where species richness had been recorded in more than one habitat type within an urban setting. As within-sample species richness will increase with habitat area, species richness estimates were also converted to species density using theory based on the species area relationship. Mixed effects models were used to model the impact on species richness and species density of different habitat types, in the current grounds and in the proposed plans. Using the two models three assumptions on how within-sample diversity scales with habitat area were tested. A pre-existing plant database was also utilised to determine changes in species composition across different habitats.
+
+\textbf{Results:} Analysis showed that the proposed plans could result in a net biodiversity increase of 14.05\% across the NHM grounds, when local species richness was modelled. The least optimist result showed only an 11.17\% increase in biodiversity, when species density was the response metric, and changes in habitat area were accounted for. Plant community composition was relatively similar between the habitats currently within the grounds.
+
+\textbf{Discussion:} The proposed plans to the NHM grounds are estimated to result in a net gain in biodiversity, most likely due to the increased number of habitats, as well as the increased area of each habitat. Overall, downscaling of methods from other global models was successful, and produced results that are able to inform local decisions. Although the method does rely on data being available, which for some comparisons was harder than others. Additionally, as data were too sparse to model how biodiversity varies after habitat disturbance and creation, this would need to be taken in account in future studies.
 \end{abstract}
 
 \begin{document}
@@ -36,131 +56,9 @@ Dummy abstract text. Dummy abstract text. Dummy abstract text. Dummy abstract te
 \maketitle
 \thispagestyle{empty}
 
-\section*{Introduction}
+\input{./../wlg-main/wlg-main}
 
-Your introduction goes here! Some examples of commonly used commands and features are listed below, to help you get started.
 
-If you have a question, please use the help menu in the top right of the screen to get in touch. When your article or pre-print is complete, use the "Submit to PeerJ" button in the topbar to send your files to PeerJ.
 
-\subsection*{About PeerJ}
-
-PeerJ is an award-winning open access publisher covering the biological and medical sciences.  PeerJ provides authors with three publication venues: \textit{PeerJ} and \textit{PeerJ Computer Science} (peer-reviewed academic journals) and \textit{PeerJ PrePrints} (a 'pre-print server'). See https://peerj.com/about/publications/ for more information.
-
-The PeerJ model allows an author to publish articles in their peer-reviewed journal via the purchase of a lifetime Publication Plan. Prices start from just \$99 (a one-off payment) which entitles an author to the lifetime ability to publish 1 article per year for free. Publication in PeerJ PrePrints is entirely free.
-
-\section*{Some \LaTeX{} Examples}
-\label{sec:examples}
-
-Use section and subsection commands to organize your document. \LaTeX{} handles all the formatting and numbering automatically. Use ref and label commands for cross-references.
-
-\subsection*{Figures and Tables}
-
-Use the table and tabular commands for basic tables --- see Table~\ref{tab:widgets}, for example. You can upload a figure (JPEG, PNG or PDF) using the project menu. To include it in your document, use the includegraphics command as in the code for Figure~\ref{fig:view} below.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=\linewidth]{view}
-\caption{An example image.}
-\label{fig:view}
-\end{figure}
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{l|r}
-Item & Quantity \\\hline
-Widgets & 42 \\
-Gadgets & 13
-\end{tabular}
-\caption{\label{tab:widgets}An example table.}
-\end{table}
-
-\subsection*{Citations}
-
-LaTeX formats citations and references automatically using the bibliography records in your .bib file, which you can edit via the project menu. Use the cite command for an inline citation, like \cite{Figueredo:2009dg}, and the citep command for a citation in parentheses \citep{Figueredo:2009dg}.
-
-\subsection*{Mathematics}
-
-\LaTeX{} is great at typesetting mathematics. Let $X_1, X_2, \ldots, X_n$ be a sequence of independent and identically distributed random variables with $\text{E}[X_i] = \mu$ and $\text{Var}[X_i] = \sigma^2 < \infty$, and let
-$$S_n = \frac{X_1 + X_2 + \cdots + X_n}{n}
-      = \frac{1}{n}\sum_{i}^{n} X_i$$
-denote their mean. Then as $n$ approaches infinity, the random variables $\sqrt{n}(S_n - \mu)$ converge in distribution to a normal $\mathcal{N}(0, \sigma^2)$.
-
-\subsection*{Lists}
-
-You can make lists with automatic numbering \dots
-
-\begin{enumerate}[noitemsep] 
-\item Like this,
-\item and like this.
-\end{enumerate}
-\dots or bullet points \dots
-\begin{itemize}[noitemsep] 
-\item Like this,
-\item and like this.
-\end{itemize}
-\dots or with words and descriptions \dots
-\begin{description}
-\item[Word] Definition
-\item[Concept] Explanation
-\item[Idea] Text
-\end{description}
-
-We hope you find write\LaTeX\ useful for your PeerJ submission, and please let us know if you have any feedback. Further examples with dummy text are included in the following pages.
-
-\section*{Methods}
-
-\lipsum[4] % Dummy text
-
-\begin{equation}
-\cos^3 \theta =\frac{1}{4}\cos\theta+\frac{3}{4}\cos 3\theta
-\label{eq:refname2}
-\end{equation}
-
-\lipsum[5] % Dummy text
-
-\subsection*{Subsection}
-
-\lipsum[6] % Dummy text
-
-\paragraph{Paragraph} \lipsum[7] % Dummy text
-\paragraph{Paragraph} \lipsum[8] % Dummy text
-
-\subsection*{Subsection}
-
-\lipsum[9] % Dummy text
-
-\begin{figure}[ht]\centering
-\includegraphics[width=\linewidth]{results}
-\caption{In-text Picture}
-\label{fig:results}
-\end{figure}
-
-Reference to Figure \ref{fig:results}.
-
-\section*{Results and Discussion}
-
-\lipsum[10] % Dummy text
-
-\subsection*{Subsection}
-
-\lipsum[11] % Dummy text
-
-\subsubsection*{Subsubsection}
-
-\lipsum[12] % Dummy text
-
-\subsubsection*{Subsubsection}
-
-\lipsum[14] % Dummy text
-
-\subsection*{Subsection}
-
-\lipsum[15-20] % Dummy text
-
-\section*{Acknowledgments}
-
-So long and thanks for all the fish.
-
-\bibliography{sample}
-
+\bibliography{./../../../PhD_BibTex/PhD-refs}
 \end{document}
