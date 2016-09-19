@@ -147,9 +147,10 @@ Anova(density3)
 model_plot_one(density3)
 
 save(density3, file = "Models/FinalDensityModel.rda")
+load("Models/FinalDensityModel.rda")
 
 density3_means <- model_Means(density3)
-png(file.path(figure_out, "Habitat_density.png"), pointsize=11)
+pdf(file.path(figure_out, "Habitat_density.pdf"), pointsize=11)
 	labs <- levels(sampled_area$Habitat)
 	par(mar=c(14, 4, 1, 1))
 	errbar(1:nrow(density3_means), exp(density3_means[,2]), exp(density3_means[,3]), 
@@ -277,7 +278,7 @@ prop2 <- habitat_areas$Proposed_Weighted_density[nrow(habitat_areas)]
 #############################################
 ### PLOTS WITH ALL COEFFICIENTS
 #############################################
-png(file.path(figure_out, "Habitat_density_plusmissing.png"), pointsize=11)
+pdf(file.path(figure_out, "Habitat_density_plusmissing.pdf"), pointsize=11)
 	missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing", 
 		 "neogene grass", "paleogene asteraceae", "species-poor hedgerow")
 	labs <- levels(sampled_area$Habitat)
@@ -318,11 +319,11 @@ anova(richness1, richness2) ## Not significant
 summary(richness2)
 Anova(richness2)
 save(richness2, file = "Models/FinalRichnessModel.rda")
-
+load("Models/FinalRichnessModel.rda")
 richness2_means <- model_Means(richness2)
 
 
-png(file.path(figure_out, "Habitat_sampledRichness.png"), pointsize=11)
+pdf(file.path(figure_out, "Habitat_sampledRichness.pdf"), pointsize=11)
 	labs <- levels(richness_data$Habitat)
 	par(mar=c(14, 4, 1, 1))
 	errbar(1:nrow(richness2_means), exp(richness2_means[1:13,2]), exp(richness2_means[1:13,3]), 
@@ -397,7 +398,7 @@ richness_areas$Current_area_m2[nrow(richness_areas)] <- totalCurrent
 richness_areas$Proposed_area_m2[nrow(richness_areas)] <- totalProposed
 
 
-png(file.path(figure_out, "Habitat_richness_plusmissing.png"), pointsize=11)
+pdf(file.path(figure_out, "Habitat_richness_plusmissing.pdf"), pointsize=11)
 	missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing",
 		 "neogene grass", "paleogene asteraceae", "species-poor hedgerow")
 	labs <- levels(as.factor(richness_means$Habitat))
@@ -442,7 +443,7 @@ simpleCap <- function(x) {
 
 
 
-png(file.path(figure_out, "Habitat_density&Richness_plusmissing.png"), pointsize=11)
+pdf(file.path(figure_out, "Habitat_density&Richness_plusmissing.pdf"), pointsize=11)
 	missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing", 
 		 "neogene grass", "paleogene asteraceae", "species-poor hedgerow")
 	labs <- levels(sampled_area$Habitat)
@@ -489,9 +490,9 @@ names(coord)<-c("Long", "Lat", "X")
 dsSPDF<-SpatialPointsDataFrame(coord[,1:2], data.frame(coord[,1:3]))
 proj4string(dsSPDF)<-CRS("+proj=longlat")
 
-png(file.path(figure_out, "Map_ModelledStudes.png"), pointsize=11)
+pdf(file.path(figure_out, "Map_ModelledStudes.pdf"), pointsize=11)
 	 par(mar=c(0, 0, 0, 0))
-	 map('worldHires', c("UK"),border=0,fill=TRUE, col="forestgreen",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
+	 map('worldHires', c("UK"),border=0,fill=TRUE, col="lightgrey",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
 	 points(dsSPDF, col="black", bg="black", cex= 1.5, pch=19)
 dev.off()
 

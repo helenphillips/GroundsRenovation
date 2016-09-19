@@ -85,7 +85,7 @@ labs <-  c("Ponds", "Neutral Grassland", "Marginal Vegetation (pond edge)", "Sho
 
 attr(similarity_nhmhabitat, "dimnames")[[1]] <- labs
 attr(similarity_nhmhabitat, "dimnames")[[2]] <- labs
-png(file.path(figure_out, "NHMHabitatsSimiarity.png"))
+pdf(file.path(figure_out, "NHMHabitatsSimiarity.pdf"))
 levelplot(similarity_nhmhabitat, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "", xlab = "")
 dev.off()
 ############################
@@ -117,6 +117,6 @@ plants_habitat <- droplevels(plants_habitat[plants_habitat$Habitat.y != "Unsure/
 
 new_plants_habitat <- remove_duplicates(plants_habitat, columns = "Habitat.y")
 similarity_habitat <- species_similarity(new_plants_habitat)
-png(file.path(figure_out, "HabitatTypeSimiarity.png"), height = 500, width = 500)
+pdf(file.path(figure_out, "HabitatTypeSimiarity.pdf"), height = 500, width = 500)
 levelplot(similarity_habitat, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "Percent of X in common with Y", xlab = "Percent of X in common with Y")
 dev.off()
