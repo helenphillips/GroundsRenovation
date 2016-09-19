@@ -34,3 +34,7 @@ MetaAnalysis/.dropbox
 MetaAnalysis/Scripts/.Rapp (Helen Phillips's conflicted copy 2015-12-05).history
 *.cls
 *.bbl
+*.aux
+*.log
+*.pdf
+*.synctex.gz
