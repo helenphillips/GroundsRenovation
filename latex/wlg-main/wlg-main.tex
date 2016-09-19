@@ -27,6 +27,7 @@ The Natural History Museum in London (NHM) has 2.18 hectares of grounds around i
 		\caption{}\label{fig:fig_b}
 	\end{subfigure}
 	\caption{Detailed plans of the NHM grounds, provided by Wilder Associates, and the area (m\textsuperscript{2}) of: (a) Current habitats types and, (b) Proposed habitats types.}
+	\label{fig:wlgplan_after}
 \end{figure}
 
 Since admission to the Museum became free in 2001 there has been an average of around 5 million visitors per year, with this number expected to increase. In part to alleviate the pressure of such large visitor numbers on the two current entrances, a third entrance through the Darwin Centre, at the west of the building, has been proposed. A Supplementary Planning Document from the Royal Borough of Kensington and Chelsea \citep{rbkc:2012} required the Museum to develop a unified scheme across the Grounds to balance the competing demands from historical significance of the iconic Waterhouse building, the setting of the listed building, visitor amenity and use of space for events. To this end, an international design competition was held in Autumn 2013. The competition attracted 43 entries from around the world, reduced to six finalists in early 2014 and a single winner unanimously chosen by a jury, chaired by Ian Henderson CBE, in April 2014. The competition was won by the team Niall McLaughlin Architects and Kim Wilkie whose plan contained an overarching continuous theme similar to that of the museum building, moving from ``extinct'' habitats in the east to current British habitats in the west (Figure \ref{fig:wlgplan_after}b, also see http://www.kimwilkie.com/london/natural-history-museum). The plans as proposed will result in the loss and reduction of some habitats, gain and expansion of others, and disturbance particularly in the eastern part of the grounds. The proposed changes have prompted concerns for the wildlife currently inhabiting the grounds, especially in the WLG in the southwestern corner of the site \citep{prospect:2015wg,guardian:2015wg,avery:2015wg,telegraph:2015wg,dailymail:2015wg}: a petition to stop the redevelopment of the grounds has attracted over 37,000 signatures as of 1 June 2016 \citep{changepetition:2015wg}.  
@@ -43,7 +44,13 @@ A common approach in conservation ecology to estimating the effects of land-use 
 
 Given this conceptual similarity, aware of the controversy surrounding the biodiversity costs and benefits of the proposed development, and having no involvement in either the proposal or the opposition to it, two of us (HRPP and AP) offered to undertake an analysis for the Natural History Museum, conceptually derived from that of \cite{Newbold:2015nat}, to estimate the net effects of the proposal and to make the resulting estimate public. This provided us with the opportunity to develop PREDICTS-style models to the context of local-scale land use decisions and to provide quantitative data-based estimates of how the proposed changes to the grounds would affect overall biodiversity. The proposal was accepted by the Natural History Museum, on a short three month timescale. SK, already involved in the Grounds Transformation Project, joined the analysis and provided detailed information about the current and proposed layouts of the grounds, as well as facilitating access to the dataset of species recorded from the various habitats within the WLG.
 
-We extended the analytical framework developed by \cite{Newbold:2015nat} in one key respect. The spatial extent of a habitat, as well as its type, is likely to affect its biodiversity values, but \cite{Newbold:2015nat} framework does not consider this effect.  Larger habitat patches are expected to contain not only more species overall than smaller patches (in line with the species-area relationship: e.g. \citealt{rosenzweig:1995species}), but also -- though less strongly -- more species per unit area (i.e., greater species density; Phillips et al. in prep.). This analysis aims to take such area-dependency into account. Although many other factors can also affect site-level diversity, notably habitat age \citep{Sattler:2010le}, time limitations precluded their consideration.
+We extended the analytical framework developed by \cite{Newbold:2015nat} in one key respect. The spatial extent of a habitat, as well as its type, is likely to affect its biodiversity values, but \cite{Newbold:2015nat} framework does not consider this effect.  Larger habitat patches are expected to contain not only more species overall than smaller patches (in line with the species-area relationship: e.g. \citealt{rosenzweig:1995species}), but also -- though less strongly -- more species per unit area (i.e., greater species density; 
+\ifappendixStyle %% thesis is true, journal is false
+Chapter \ref{ch:sdar})%% Thesis
+\else
+\citealt{Phillips:2015sdar})
+\fi
+. This analysis aims to take such area-dependency into account. Although many other factors can also affect site-level diversity, notably habitat age \citep{Sattler:2010le}, time limitations precluded their consideration.
 
 \ifappendixStyle %% thesis is true, journal is false
 \section{Methods}
@@ -63,7 +70,13 @@ There are 1.8 hectares of grounds around the NHM buildings at South Kensington. 
 
 Biodiversity is a complex, multifaceted and multiscale concept that cannot be captured fully by any single measure \citep{Purvis:2000nat}. Given time constraints, we therefore had to choose the most appropriate measure of biodiversity to include in our models. Perhaps the most intuitively appealing would be the overall species richness of the grounds. However, as outlined above, the sampling undertaken so far does not provide a basis for estimating this quantity in the present, and even if it did there would be no basis for estimating overall species richness under the proposed changes.
 
-\cite{Newbold:2015nat} focused mainly on within-sample species richness and overall abundance, both expressed relative to the values expected for a pristine site (i.e., a site with no human impacts). Such a baseline is not appropriate for young anthropogenic urban habitats, which are not expected to approach the diversity of pristine habitats and which are not in close geographic proximity to any such habitats. Additionally, \cite{Newbold:2015nat} analysis did not consider the effects of habitat patch size on within-sample species richness, despite the expectation of a positive correlation (Phillips et al., in review [SDAR]). To overcome these twin limitations, we chose to use a measure of biodiversity that can incorporate any effects of patch size - namely species density (the expected number of species sampled in a constant area of a given habitat) - and did not attempt to express values relative to a pristine baseline.
+\cite{Newbold:2015nat} focused mainly on within-sample species richness and overall abundance, both expressed relative to the values expected for a pristine site (i.e., a site with no human impacts). Such a baseline is not appropriate for young anthropogenic urban habitats, which are not expected to approach the diversity of pristine habitats and which are not in close geographic proximity to any such habitats. Additionally, \cite{Newbold:2015nat} analysis did not consider the effects of habitat patch size on within-sample species richness, despite the expectation of a positive correlation 
+\ifappendixStyle %% thesis is true, journal is false
+(Chapter \ref{ch:sdar})%% Thesis
+\else
+(\citealt{Phillips:2015sdar})
+\fi
+. To overcome these twin limitations, we chose to use a measure of biodiversity that can incorporate any effects of patch size - namely species density (the expected number of species sampled in a constant area of a given habitat) - and did not attempt to express values relative to a pristine baseline.
 
 \ifappendixStyle %% thesis is true, journal is false
 \subsection{Collation of data}%% Thesis
@@ -97,7 +110,13 @@ Data on plants from the WLG database were also included in the modelling dataset
 \else
 \subsection*{Accounting for area effects}
 \fi
-As well as depending on the nature of the habitat, the expected number of species in a sample also depends on the area covered by the sample (the species area relationship, or SAR: \citealt{rosenzweig:1995species}) and the extent of the (often much larger) habitat patch within which the sample was taken (the species density-area relationship, or SDAR: Phillips et al. in review). Samples covering larger areas will encounter a wider range of microclimatic and other environmental conditions, meaning that more species have the potential to be sampled. Larger patches of habitat can additionally support larger populations of resident species meaning that species density is likely to be higher. Both of these relationships need to be considered in order to provide the best estimate of the net effects of the proposed redevelopment on biodiversity within the grounds.
+As well as depending on the nature of the habitat, the expected number of species in a sample also depends on the area covered by the sample (the species area relationship, or SAR: \citealt{rosenzweig:1995species}) and the extent of the (often much larger) habitat patch within which the sample was taken (the species density-area relationship, or SDAR: 
+\ifappendixStyle %% thesis is true, journal is false
+Chapter \ref{ch:sdar})%% Thesis
+\else
+\citealt{Phillips:2015sdar})
+\fi
+. Samples covering larger areas will encounter a wider range of microclimatic and other environmental conditions, meaning that more species have the potential to be sampled. Larger patches of habitat can additionally support larger populations of resident species meaning that species density is likely to be higher. Both of these relationships need to be considered in order to provide the best estimate of the net effects of the proposed redevelopment on biodiversity within the grounds.
 
 We estimated the expected species density for a 10m\textsuperscript{2} sampling frame, from each site`s within-sample species richness and area sampled, using: 
 \begin{equation}
@@ -105,7 +124,19 @@ log S_{10} = log S_s + z(log 10 - log A_s)
 \end{equation}
 
 
-Where $A_s$ is the area over which the sample was taken and $S_s$ the number of species in the sample, and $10$ is the area for which species density ($S_{10}$) is calculated for. Theory predicts that z {\raise.17ex\hbox{$\scriptstyle\sim$}} 0.10 (Phillips et al. in review): the difference between the island SAR for isolated fragments (z {\raise.17ex\hbox{$\scriptstyle\sim$}} 0.25) and the continental SAR (z {\raise.17ex\hbox{$\scriptstyle\sim$}} 0.15). Phillips et al. (in review) estimated z empirically from a synthesis of data from 38 studies, obtaining a value of 0.07 (95\% confidence interval: 0.048 to 0.11). We therefore used both z=0.10 and z=0.07 in the analyses that follow, but present only the results of z=0.1 in the main text (See Supplementary Material for z=0.07 analysis).  Because the area-scaling of species density is not yet well established \citep[e.g.][]{Giladi:2014bio}, we also modelled within-sample species richness as a response variable.
+Where $A_s$ is the area over which the sample was taken and $S_s$ the number of species in the sample, and $10$ is the area for which species density ($S_{10}$) is calculated for. Theory predicts that z {\raise.17ex\hbox{$\scriptstyle\sim$}} 0.10 
+\ifappendixStyle %% thesis is true, journal is false
+(Chapter \ref{ch:sdar})%% Thesis
+\else
+(\citealt{Phillips:2015sdar})
+\fi
+: the difference between the island SAR for isolated fragments (z {\raise.17ex\hbox{$\scriptstyle\sim$}} 0.25) and the continental SAR (z {\raise.17ex\hbox{$\scriptstyle\sim$}} 0.15). 
+\ifappendixStyle %% thesis is true, journal is false
+In Chapter \ref{ch:sdar} I %% Thesis
+\else
+\cite{Phillips:2015sdar} 
+\fi
+estimated z empirically from a synthesis of data from 38 studies, obtaining a value of 0.07 (95\% confidence interval: 0.048 to 0.11). We therefore used both z=0.10 and z=0.07 in the analyses that follow, but present only the results of z=0.1 in the main text (See Supplementary Material for z=0.07 analysis).  Because the area-scaling of species density is not yet well established \citep[e.g.][]{Giladi:2014bio}, we also modelled within-sample species richness as a response variable.
 
 \ifappendixStyle %% thesis is true, journal is false
 \subsection{Modelling}%% Thesis
