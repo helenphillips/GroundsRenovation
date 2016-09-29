@@ -11,7 +11,6 @@
 #################
 
 source("R/GoogleSpreadsheets.R")
-source("R/CheckComparisons.R")
 source("R/DataFormat.R")
 source("R/ModelFunctions.R")
 
@@ -73,7 +72,7 @@ library(xlsx)
 #################
 
 garden <- read.csv("data/Wildlife Garden - data collection - Sheet1.csv")
-
+garden <- prepareGS(garden) ## Makes sure all factors are factors, and that all coordinates are in decimal degrees. NAs due to some sites not have coordinates
 
 #################
 ## Study info 
@@ -438,7 +437,7 @@ studies_used <- unique(density3@frame$Study.ID)
 canada <- c("2011_MacIvor 1", "2011_MacIvor 2")
 studies_used <- studies_used[!(studies_used %in% canada)]
 studies_modelled <- garden[garden$Study.ID %in% studies_used,]
- 
+
 coord<-aggregate(cbind(studies_modelled$long, studies_modelled$lat), list(studies_modelled$Study.ID), max)
 coord$X<-coord$Group.1
 coord<-coord[2:4]

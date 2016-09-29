@@ -1,33 +1,45 @@
-###### 1. Change working directory to "MetaAnalysis" folder
+###### 1. Change working directory to project folder
+# setwd("~/GroundsRenovation")
 
-setwd("~/Box Sync/help/PhD_Copy/Wildlife Garden/MetaAnalysis")
 
 ###### 2. Libraries
 library(lme4)
 
-if(Sys.info()["nodename"] == "helensminimac.nhm.ac.uk" ){
-	path <- "/Users/hp1111/PhD/git_phdChapters/git_WildlifeGarden/"
-}
-source(file.path(path, "MetaAnalysis/Scripts/Functions/GoogleSpreadsheets.R"))
-source(file.path(path,"MetaAnalysis/Scripts/Functions/DataFormat.R"))
-source(file.path(path, "/MetaAnalysis/Scripts/Functions/SensitivityAnalysis.R"))
+###### 3. Functions
 
-###### 3. Model
+source("R/GoogleSpreadsheets.R"))
+source("R/DataFormat.R"))
+source("R/SensitivityAnalysis.R"))
+
+
+###### 4. Locations
+## Incase figures are to be saved
+
+# if(!dir.exists("Figures")){
+#	dir.create("Figures")
+# }
+# figure_out <- "Figures"
+
+
+
+###### 5. Model
+## Needed to have saved the model previously
 load("Models/FinalDensityModel.rda")
-garden <- OpenGS()
+
+
+###### 6. Data
+garden <- read.csv("data/Wildlife Garden - data collection - Sheet1.csv")
+garden <- prepareGS(garden) ## Makes sure all factors are factors, and that all coordinates are in decimal degrees. NAs due to some sites not 
 
 
 
-#### 4. New dataframe
-figure_out <- "Figures"
+#### 7. Analysis
 
-
-
-SA <- Sensitivity_Analysis(density3, reps = 1000)
-pdf(file.path(figure_out, "SensitivityAnalysis.pdf"))
-hist(SA, xlab = "% Change", main="")
-abline(v=0)
-dev.off()
+SA <- Sensitivity_Analysis(density3, reps = 1000) ## Model and the number of repititions
+# pdf(file.path(figure_out, "SensitivityAnalysis.pdf"))
+	hist(SA, xlab = "% Change", main="")
+	abline(v=0)
+# dev.off()
 sum(SA < 0)/1000 * 100
 
 
