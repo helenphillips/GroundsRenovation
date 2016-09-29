@@ -17,6 +17,6 @@ model_Means <- function(model){
 	    , tlo = newdat[2]-cmult*sqrt(tvar1) ## Fixed effects uncertanty and RE variance
 	    , thi = newdat[2] +cmult*sqrt(tvar1)
 	)
-
+	names(newdat)[3:6] <- c("plo", "phi", "tlo", "thi")
 	return(newdat)
 }
