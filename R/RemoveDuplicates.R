@@ -11,7 +11,7 @@ remove_duplicates <- function(plants, columns){
 		
 		if(length(tmp$NBN.Name) != length(unique(tmp$NBN.Name))){
 			
-			print(paste(unique_areas[a], "is un-equal", sep =" "))
+			# print(paste(unique_areas[a], "is un-equal", sep =" "))
 			duplicates <- tmp[duplicated(tmp$NBN.Name),]
 			duplicates2 <- tmp[tmp$NBN.TVK %in% duplicates$NBN.TVK,]
 			
@@ -30,7 +30,7 @@ remove_duplicates <- function(plants, columns){
 			new_plants[[a]] <- tmp	
 		
 		}else{
-			print(paste(unique_areas[a], "is equal", sep =" "))
+			# print(paste(unique_areas[a], "is equal", sep =" "))
 			new_plants[[a]] <- tmp	
 		}
 		
