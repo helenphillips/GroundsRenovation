@@ -5,28 +5,26 @@ Paper was submitted to PeerJ for review.
 
 ## Details
 ===========
-### MetaAnalysis/Scripts folder
+### R/
+This folder contains all functions related to all the analysis. Loaded within individual scripts.
 
-This folder contains all scripts related to the meta-analysis.
-#### 02_main.R
+### analysis/
+Scripts for the main analysis.
+
+#### MetaAnalysis.R
 Main analysis script for the meta-analysis. *Should* be able to be re-run if entire repository has been downloaded and working directory has been set.
 
-#### 03_PlantsDatabase.R
-Not nessecary to re-run for re-analysis. Output has already been added to the main dataset.
-This scripts uses the data from the Wildlife Garden's database (available elsewhere), to find relevant data from each habitat area to calculate the species richness. Output is saved as a .csv file, and has already been added to main dataset.
+#### SpeciesSimilarity.R
+Code calculates the similarity in plant species between different habitats within the grounds. *Should* work on anymore
 
-#### 04_SensitivityAnalysis.R
+#### SensitivityAnalysis.R
 Code to run the sensitivity analysis that investigated how the overall biodiversity value might change due to uncertainty around the model coefficients.
 
-#### /Functions
-All functions that the above R code used. Loaded within the scripts.
 
 
-### PlantsDatabase/Scripts
-Analysis relating to the Wildlife Garden's database on plant species. Will need original data (not provided here) to run. Not written to be run by 
+### data/
+All data used in the analysis.  Also include bibliography for papers used in the analysis.
 
-#### 01_main.R
-Code would need to be adapted to run on other machines (sorry). Would also require the Wildlife Garden database (available elsewhere).  Code calculates the similarlity in plant species between different habitats within the grounds.
 
 ### Latex/
 Main latex files for the write up and submission to PeerJ.
