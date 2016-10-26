@@ -60,8 +60,9 @@ Chapter \ref{ch:sdar})%% Thesis
 \begin{landscape}
  \begin{table}[htbp]
 \centering
-\footnotesize
-\begin{tabular}{P{2.5cm}  P{8.5cm} P{1.7cm} P{1.2cm} P{1.2cm} P{4.7cm}} \hline
+\scriptsize
+\caption{Habitat types in the current and the proposed plans of the Natural History Museum grounds. For each habitat type a brief description is given, its UK BAP Broad Habitat classification, current area and area under the proposed plans and how the coefficient for the biodiversity estimate was obtained.}
+\begin{tabular}{P{2.8cm}  P{8.5cm} P{1.7cm} P{1.2cm} P{1.2cm} P{4.7cm}} \hline
 
 Habitat Type	&	Description	&	UK BAP Broad Habitat	&	Current Area (m\textsuperscript{2})	&	Proposed Area (m\textsuperscript{2})	&	Coefficient\\ \hline
 Hard-standing	&	Pathways and other concreted areas		&	NA	&	10415	&	9525.16	&	Assumed to be zero \\
@@ -86,7 +87,7 @@ Neogene grass	&	Grass similar to that present during the Neogene period	&	NA	&	0
       \bottomrule
 
 \end{tabular}
-\caption{Habitat types in the current and the proposed plans of the Natural History Museum grounds. For each habitat type a brief description is given, its UK BAP Broad Habitat classification, current area and area under the proposed plans and how the coefficient for the biodiversity estimate was obtained.}
+
 \label{tab:wlg1}
 \end{table}
 \end{landscape}
@@ -130,7 +131,7 @@ Biodiversity is a complex, multifaceted and multiscale concept that cannot be ca
 \subsection*{Collation of data}
 \fi
 
-We conducted literature searches to identify publications that compared within-sample species richness between two or more of the habitat types in Table \ref{tab:wlg1}. Two searches were undertaken: the first set of search terms was highly specific (full search terms in Appendix 1) while the second -- to fill the many remaining gaps -- was broader (full search terms in Appendix 2). Additional searches targeted habitats for which data were lacking, particularly habitats which are not typically urban or widespread in the UK.
+We conducted literature searches to identify publications that compared within-sample species richness between two or more of the habitat types in Table \ref{tab:wlg1}. Two searches were undertaken: the first set of search terms was highly specific (full search terms in Appendix \ref{txt:wlg-appendix1}) while the second -- to fill the many remaining gaps -- was broader (full search terms in Appendix \ref{txt:wlg-appendix2}). Additional searches targeted habitats for which data were lacking, particularly habitats which are not typically urban or widespread in the UK.
 
 We used data collected from urban environments wherever possible. Data had to meet four criteria:
 \begin{enumerate}
@@ -141,7 +142,7 @@ We used data collected from urban environments wherever possible. Data had to me
 \end{enumerate}
 ImageJ \citep{schindelin:2012fiji} was used to extract data from figures when required. We did not find sufficient data that compared habitats of different ages or that reported measures of abundance, so these aspects of the original design of the study were dropped for practical reasons (the study had to be completed by a deadline in order to be able to feed into the planning process).
 
-The data from each paper were collated as a ``study''. If a paper contained data from multiple sampling methodologies then it was split into multiple studies based on the methodology \citep[following][]{Hudson:2014predicts}. Data were recorded for each site within a study where possible, or otherwise as averages/totals for each habitat type within a study. For each study, we recorded whether it sampled invertebrates or plants. We classified the habitat of each site into one of the 19 habitat types in Table \ref{tab:wlg1}; any sampled habitats not present in the museum's grounds or renovation plans were excluded from the analysis. (The complete dataset is available at: http://data.nhm.ac.uk/dataset/grounds-metaanalysis-data and code is available at: https://github.com/helenphillips/GroundsRenovation)
+The data from each paper were collated as a ``study''. If a paper contained data from multiple sampling methodologies then it was split into multiple studies based on the methodology \citep[following][]{Hudson:2014predicts}. Data were recorded for each site within a study where possible, or otherwise as averages/totals for each habitat type within a study. For each study, we recorded whether it sampled invertebrates or plants. We classified the habitat of each site into one of the 19 habitat types in Table \ref{tab:wlg1}; any sampled habitats not present in the museum's grounds or renovation plans were excluded from the analysis. (The complete dataset is available at: \url{http://data.nhm.ac.uk/dataset/grounds-metaanalysis-data} and code is available at: \url{https://github.com/helenphillips/GroundsRenovation})
 
 \ifappendixStyle %% thesis is true, journal is false
 \subsection{WLG Plant Database}%% Thesis
@@ -182,7 +183,7 @@ In Chapter \ref{ch:sdar} I %% Thesis
 \else
 \cite{Phillips:2015sdar} 
 \fi
-tested this prediction, estimating z empirically from a synthesis of data from 38 studies; their empirical estimate was z = 0.07, but the predicted value fell within the 95\% confidence interval (0.048 to 0.11). We therefore use z = 0.10 in the analyses that follow, but present results of z = 0.7 in Appendix 3 as a further sensitivity analysis. Because the area-scaling of species density is not yet well established \citep[e.g.][]{Giladi:2014bio}, we also modelled within-sample species richness as a response variable.
+tested this prediction, estimating z empirically from a synthesis of data from 38 studies; their empirical estimate was z = 0.07, but the predicted value fell within the 95\% confidence interval (0.048 to 0.11). We therefore use z = 0.10 in the analyses that follow, but present results of z = 0.7 in Appendix \ref{txt:wlg-appendix3} as a further sensitivity analysis. Because the area-scaling of species density is not yet well established \citep[e.g.][]{Giladi:2014bio}, we also modelled within-sample species richness as a response variable.
 
 \ifappendixStyle %% thesis is true, journal is false
 \subsection{Modelling}%% Thesis
@@ -226,7 +227,7 @@ A sensitivity analysis was performed to assess the robustness of the modelled sp
 
 Community similarity of the habitats within the current WLG was estimated using the plant database as an indication of how overall species composition might change with the removal of some habitats. Using just the records in the database between 2013 and 2015, the similarity of species composition (percentage of species in common) was calculated between each pair of habitat types, and the results displayed as an asymmetrical matrix. Thus, for each habitat on the x-axis, the percentage of species that habitat-x shares with a habitat on the y-axis is shown.
 
-All code used in this analysis is available at github: https://github.com/helenphillips/GroundsRenovation
+All code used in this analysis is available at github: \url{https://github.com/helenphillips/GroundsRenovation}.
 
 \ifappendixStyle %% thesis is true, journal is false
 \section{Results}
