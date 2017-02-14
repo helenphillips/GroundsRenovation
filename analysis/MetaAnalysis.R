@@ -1,6 +1,6 @@
 ###### 1. Change working directory to project folder
 # setwd("~/GroundsRenovation")
-
+setwd("C:\\Users\\hp39wasi\\GroundsRenovation")
 ## In column headings:
 ## "Current" always refers to estimates of the grounds as they are now
 ## "Proposed" refer to grounds estimates after renovation
@@ -46,6 +46,7 @@ library(dplyr)
 library(car)
 library(Hmisc)
 library(xlsx)
+library(GISTools)
 
 #################
 ## Locations
@@ -53,18 +54,18 @@ library(xlsx)
 
 ## Incase figures are to be saved
 
-# if(!dir.exists("Figures")){
-#	dir.create("Figures")
-# }
-# figure_out <- "Figures"
+ if(!dir.exists("Figures")){
+	dir.create("Figures")
+ }
+ figure_out <- "Figures"
 
 
 ## Incase models are to be saved
 
-# if(!dir.exists("Models")){
-#	dir.create("Models")
-# }
-# models_out <- "Models"
+ if(!dir.exists("Models")){
+	dir.create("Models")
+ }
+ models_out <- "Models"
 
 
 #################
@@ -398,20 +399,22 @@ prop <- richness_areas$Proposed_Weighted_richness[nrow(richness_areas)]
 #################
 
 
-# pdf(file.path(figure_out, "Habitat_density&Richness_plusmissing.pdf"), pointsize=11)
-	missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing", 
+ pdf(file.path(figure_out, "Habitat_density&Richness_plusmissing.pdf"), pointsize=11)
+	
+  cex.txt <- 1.2
+  missing_coefs <- c("cretaceous angiosperm shrubs", "fern and cycad planting", "hard standing", 
 		 "neogene grass", "paleogene asteraceae", "species-poor hedgerow")
 	labs <- levels(sampled_area$Habitat)
 	labs2 <- c(labs, missing_coefs)
 	labs2 <- sapply(labs2, simpleCap)
 	labs2[9] <- "Marginal Vegetation (pond edge)"
 	labs2[15] <- "Fern and Cycad Planting"
-	par(mar=c(14, 4, 1, 1))
+	par(mar=c(15.5, 5, 1, 5))
 	
 	# Density estimates
 	errbar(1:nrow(density3_means), exp(density3_means[,2]), exp(density3_means[,3]), exp(density3_means[,4]), 
-		col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,60), las = 1, cex= 1, ylab = "", xlim=c(0, length(labs2)))
-	points(1:nrow(density3_means),exp(density3_means[,2]),col="black",bg="white",pch=19,cex=1)
+		col = "white", main = "", sub ="", xlab ="", bty = "n", pch = 19, xaxt = "n", ylim=c(0,60), las = 1, cex= cex.txt, ylab = "", xlim=c(0, length(labs2)))
+	points(1:nrow(density3_means),exp(density3_means[,2]),col="black",bg="white",pch=19,cex=cex.txt)
 	missing_densities <- habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat %in% missing_coefs]
 	points((nrow(density3_means)+1):(length(labs2)), missing_densities, col="red", pch=19)
 	# Species richness estimates
@@ -423,11 +426,12 @@ prop <- richness_areas$Proposed_Weighted_richness[nrow(richness_areas)]
 	points((nrow(richness_means)+1):(length(labs2)) + 0.2, missing_richness, col="pink", pch=19)
 
 
-	axis(1, at=1:length(labs2), labels = labs2, las = 2)
-	mtext(expression(Within-sample ~ Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2)
-	mtext("Within-sample Species Richness", side = 2, line = 3, col = "darkgrey")
+	axis(1, at=1:length(labs2), labels = labs2, las = 2, cex.axis = cex.txt)
+	mtext(expression(Within-sample ~ Species ~ Density ~ (per ~ 10~m^{2})), side = 2, line = 2, cex = cex.txt)
+	axis(4, at=seq(0, 60, by = 10), las = 2)
+	mtext("Within-sample Species Richness", side = 4, line = 2, cex = cex.txt)
 	
-# dev.off()
+ dev.off()
 
 
 #################
@@ -445,10 +449,11 @@ names(coord)<-c("Long", "Lat", "X")
 dsSPDF<-SpatialPointsDataFrame(coord[,1:2], data.frame(coord[,1:3]))
 proj4string(dsSPDF)<-CRS("+proj=longlat")
 
-# pdf(file.path(figure_out, "Map_ModelledStudes.pdf"), pointsize=11)
+ pdf(file.path(figure_out, "Map_ModelledStudes.pdf"), pointsize=11, width = 2.4, height = 5)
 	 par(mar=c(0, 0, 0, 0))
-	 map('worldHires', c("UK"),border=0,fill=TRUE, col="lightgrey",  xlim=c(-8,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
+	 map('worldHires', c("UK"),border=0,fill=TRUE, col="lightgrey",  xlim=c(-8.1,2), ylim=c(49,60.9), mar = c(0, 0, 0, 0))
 	 points(dsSPDF, col="black", bg="black", cex= 1.5, pch=19)
-# dev.off()
-
-
+	 maps:::map.scale(y=57, x=-1, ratio=FALSE, cex = 0.7, srt = 310)  
+	 north.arrow(xb=-0.2, yb=58, len=0.1, lab="N")
+ dev.off()
+	 

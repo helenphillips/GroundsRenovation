@@ -44,7 +44,7 @@ garden <- prepareGS(garden) ## Makes sure all factors are factors, and that all 
 ## Just NHM sites, to match the areas with the Plant Database Extract
 nhm <- garden[garden$Study.ID == "PlantDatabaseExtract",]
 
-plants <- read.csv("~/Box Sync/help/PhD_Copy/Wildlife Garden/PlantsDatabase/DataFiles/PlantsByBed_NBN_Combined_2015-11-05-CMTR.csv")
+plants <- read.csv("data/PlantsByBed_NBN_Combined_2015-11-05-CMTR.csv")
 plants$X <- NULL
 nrow(plants) # 5731
 
@@ -76,6 +76,10 @@ labs <-  c("Ponds", "Neutral Grassland", "Marginal Vegetation (pond edge)", "Sho
 attr(similarity_nhmhabitat, "dimnames")[[1]] <- labs
 attr(similarity_nhmhabitat, "dimnames")[[2]] <- labs
 
-# pdf(file.path(figure_out, "NHMHabitatsSimiarity.pdf"))
-levelplot(similarity_nhmhabitat, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45)), ylab = "Percent of X in common with Y", xlab = "Percent of X in common with Y")
-# dev.off()
+ pdf(file.path(figure_out, "NHMHabitatsSimiarity.pdf"), width = 8, height = 6)
+levelplot(similarity_nhmhabitat, col.regions=colorRampPalette(c("white", "black")), scale=list(x=list(rot=45, cex=1.1), y=list(cex = 1.1)), 
+            ylab = " ", xlab = " ")
+ dev.off()
+
+ 
+ 
