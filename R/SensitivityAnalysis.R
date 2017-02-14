@@ -1,5 +1,5 @@
-Sensitivity_Analysis <- function(model, reps){
-	
+Sensitivity_Analysis <- function(model, reps, scale.area = FALSE){
+## 	if(scale.area == TRUE && richnessmodel == TRUE){stop("Can not area scale a richness model")}
 	newdat <- expand.grid(predictor = levels(model@frame[,2]), response= 0)
 	names(newdat)[2] <- names(model@frame)[1]
 	names(newdat)[1] <- names(model@frame)[2]
@@ -14,7 +14,8 @@ Sensitivity_Analysis <- function(model, reps){
 	means$Habitat <- tolower(means$Habitat)
 
 	####### 5. Other habitats
-	shrubs <- read.csv("Papers/1979_Strong/Data.csv")
+	##shrubs <- read.csv("Papers/1979_Strong/Data.csv")
+	shrubs <- read.csv("data/AdditionalData.csv") ## From Strong et al. 1979
 	trees <- shrubs$Species.Richness[shrubs$Host == "Trees" & shrubs$Status == "Middle"]
 	introduced_shrubs <- shrubs$Species.Richness[shrubs$Host == "Shrubs" & shrubs$Status == "Middle"]
 	introduced_shrubs_coef <- introduced_shrubs/trees
@@ -34,37 +35,37 @@ Sensitivity_Analysis <- function(model, reps){
 		)
 	habitat_areas$Habitat <- tolower(habitat_areas$Habitat)
 	habitat_areas <- merge(habitat_areas, means, by.x = "Habitat", by.y = "Habitat", all.x = TRUE)
-	names(habitat_areas)[4] <- "SpeciesDensity_10m2"
+	names(habitat_areas)[4] <- "response"
 
-	habitat_areas$SpeciesDensity_10m2 <- exp(habitat_areas$SpeciesDensity_10m2)
+	habitat_areas$response <- exp(habitat_areas$response)
 	habitat_areas$se <- exp(habitat_areas$se)
 		
-	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "fern and cycad planting"] <- 
-		habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "introduced shrubs"] 
+	habitat_areas$response[habitat_areas$Habitat == "fern and cycad planting"] <- 
+		habitat_areas$response[habitat_areas$Habitat == "introduced shrubs"] 
 	habitat_areas$se[habitat_areas$Habitat == "fern and cycad planting"] <- 
 			habitat_areas$se[habitat_areas$Habitat == "introduced shrubs"] * 1.5
 						
-	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- 
-			habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "introduced shrubs"]
+	habitat_areas$response[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- 
+			habitat_areas$response[habitat_areas$Habitat == "introduced shrubs"]
 	habitat_areas$se[habitat_areas$Habitat == "cretaceous angiosperm shrubs"] <- 
 			habitat_areas$se[habitat_areas$Habitat == "introduced shrubs"] * 1.5
 	
-	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-poor hedgerow"] <- 
-			habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
+	habitat_areas$response[habitat_areas$Habitat == "species-poor hedgerow"] <- 
+			habitat_areas$response[habitat_areas$Habitat == "species-rich hedgerow"] * species_poor_hedge_coef
 	habitat_areas$se[habitat_areas$Habitat == "species-poor hedgerow"] <- 
 			habitat_areas$se[habitat_areas$Habitat == "species-rich hedgerow"] * 1.5
 			
-	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "neogene grass"] <- 
-			habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "amenity grass/turf"]
+	habitat_areas$response[habitat_areas$Habitat == "neogene grass"] <- 
+			habitat_areas$response[habitat_areas$Habitat == "amenity grass/turf"]
 	habitat_areas$se[habitat_areas$Habitat == "neogene grass"] <- 
 			habitat_areas$se[habitat_areas$Habitat == "amenity grass/turf"] * 1.5
 			
-	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "paleogene asteraceae"] <- 
-			habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "short/perennial vegetation"]
+	habitat_areas$response[habitat_areas$Habitat == "paleogene asteraceae"] <- 
+			habitat_areas$response[habitat_areas$Habitat == "short/perennial vegetation"]
 	habitat_areas$se[habitat_areas$Habitat == "paleogene asteraceae"] <- 
 			habitat_areas$se[habitat_areas$Habitat == "short/perennial vegetation"] * 1.5
 			
-	habitat_areas$SpeciesDensity_10m2[habitat_areas$Habitat == "hard standing"] <- 0
+	habitat_areas$response[habitat_areas$Habitat == "hard standing"] <- 0
 	habitat_areas$se[habitat_areas$Habitat == "hard standing"] <- 0
 
 
@@ -77,32 +78,49 @@ Sensitivity_Analysis <- function(model, reps){
 	Proposed_weight <- Proposed_weight[-length(Proposed_weight)]
 
 	changes <- rep(NA, length=reps)
-
-	for(turn in 1:reps){
-		temp_df <- habitat_areas[-nrow(habitat_areas),]
+  ## If species density and scaled
+	
+	for(turn in 1:reps){ 
+	  if(scale.area){
+	  	temp_df <- habitat_areas[-nrow(habitat_areas),]
 		
-		temp_df$SpeciesDensity_10m2 <- rnorm(temp_df$SpeciesDensity_10m2, temp_df$SpeciesDensity_10m2, temp_df$se)
+		  temp_df$response <- rnorm(temp_df$response, temp_df$response, temp_df$se)
 		
-		temp_df$Corrected_SpeciesDensity_Current <- calculate_density_cSAR(S= temp_df$SpeciesDensity_10m2, A=10, z=0.1, newA= temp_df$Current_area_m2)
-		temp_df$Corrected_SpeciesDensity_Proposed <- calculate_density_cSAR(S= temp_df$SpeciesDensity_10m2, A=10, z=0.1, newA= temp_df$Proposed_area_m2)
+		  temp_df$Corrected_SpeciesDensity_Current <- calculate_density_cSAR(S= temp_df$response, A=10, z=0.1, newA= temp_df$Current_area_m2)
+		  temp_df$Corrected_SpeciesDensity_Proposed <- calculate_density_cSAR(S= temp_df$response, A=10, z=0.1, newA= temp_df$Proposed_area_m2)
 		
-		if(any(is.na(temp_df$Corrected_SpeciesDensity_Current))){ temp_df$Corrected_SpeciesDensity_Current[is.na(temp_df$Corrected_SpeciesDensity_Current)] <- 0}
-		if(any(is.na(temp_df$Corrected_SpeciesDensity_Proposed))){ temp_df$Corrected_SpeciesDensity_Proposed[is.na(temp_df$Corrected_SpeciesDensity_Proposed)] <- 0}
-		
+		  if(any(is.na(temp_df$Corrected_SpeciesDensity_Current))){ temp_df$Corrected_SpeciesDensity_Current[is.na(temp_df$Corrected_SpeciesDensity_Current)] <- 0}
+		  if(any(is.na(temp_df$Corrected_SpeciesDensity_Proposed))){ temp_df$Corrected_SpeciesDensity_Proposed[is.na(temp_df$Corrected_SpeciesDensity_Proposed)] <- 0}
 		
 				
-		Current_Weighted_density <- temp_df$SpeciesDensity_10m2 * Current_weight
-		temp_df$Current_Weighted_Correcteddensity <- temp_df$Corrected_SpeciesDensity_Current * Current_weight
+	  	temp_df$Current_Weighted_Correcteddensity <- temp_df$Corrected_SpeciesDensity_Current * Current_weight
+		  temp_df$Proposed_Weighted_Correcteddensity <- temp_df$Corrected_SpeciesDensity_Proposed * Proposed_weight
 
-		Proposed_Weighted_density <- temp_df$SpeciesDensity_10m2 * Proposed_weight
-		temp_df$Proposed_Weighted_Correcteddensity <- temp_df$Corrected_SpeciesDensity_Proposed * Proposed_weight
+	  	current_total <- sum(temp_df$Current_Weighted_Correcteddensity)
+	  	proposed_total <- sum(temp_df$Proposed_Weighted_Correcteddensity)
+	  	diff <-  proposed_total - current_total
 
-		current_total <- sum(temp_df$Current_Weighted_Correcteddensity)
-		proposed_total <- sum(temp_df$Proposed_Weighted_Correcteddensity)
-		diff <-  proposed_total - current_total
+		  percent_change <- (diff/current_total) * 100
+		  changes[turn] <- percent_change
+  	}
+  if(scale.area == FALSE){
+    temp_df <- habitat_areas[-nrow(habitat_areas),]
+    
+    temp_df$response <- rnorm(temp_df$response, temp_df$response, temp_df$se)
+    
+    if(any(is.na(temp_df$response))){ temp_df$response[is.na(temp_df$response)] <- 0}
 
-		percent_change <- (diff/current_total) * 100
-		changes[turn] <- percent_change
-	}
+    temp_df$Current_Weighted_response <- temp_df$response * Current_weight
+    temp_df$Proposed_Weighted_response <- temp_df$response * Proposed_weight
+    
+    current_total <- sum(temp_df$Current_Weighted_response)
+    proposed_total <- sum(temp_df$Proposed_Weighted_response)
+    diff <-  proposed_total - current_total
+    
+    percent_change <- (diff/current_total) * 100
+    changes[turn] <- percent_change
+    }
+  }
+	  
 	return(changes)
 }
