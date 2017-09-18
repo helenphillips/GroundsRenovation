@@ -36,9 +36,9 @@ garden <- prepareGS(garden) ## Makes sure all factors are factors, and that all 
 
 #### 7. Analysis
 
-SA_scaled <- Sensitivity_Analysis(density3, reps = 1000, scale.area = TRUE) ## Model and the number of repetitions
+SA_scaled <- Sensitivity_Analysis(density3, reps = 1000, scale.area = TRUE, pointsize=11) ## Model and the number of repetitions
  pdf(file.path(figure_out, "SensitivityAnalysis_scaled.pdf"))
-	hist(SA_scaled, xlab = "% Change", main="")
+	hist(SA_scaled, xlab = "% Change", main="", cex.lab = 1.2)
 	abline(v=0)
  dev.off()
 sum(SA_scaled < 0)/1000 * 100
